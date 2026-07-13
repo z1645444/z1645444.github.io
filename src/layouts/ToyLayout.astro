@@ -46,7 +46,7 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				display: flex;
 				min-height: 100vh;
 				background-color: var(--bg-page);
-				transition: background-color 0.3s ease;
+				transition: background-color 0.2s ease-in-out;
 			}
 
 			/* Sidebar Section */
@@ -63,7 +63,7 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				top: 0;
 				height: 100vh;
 				z-index: 100;
-				transition: background-color 0.3s ease, border-color 0.3s ease;
+				transition: background-color 0.2s ease-in-out;
 			}
 
 			.sidebar-top {
@@ -111,7 +111,7 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				text-decoration: none;
 				border: 3px solid transparent;
 				border-radius: 16px;
-				transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+				transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 			}
 
 			.nav-item-link:hover {
@@ -151,7 +151,7 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				border-radius: 10px;
 				border: 2px solid var(--border-color);
 				background-color: var(--bg-card);
-				transition: background-color 0.3s ease, border-color 0.3s ease;
+				transition: background-color 0.2s ease-in-out;
 			}
 
 			.sidebar-bottom {
@@ -186,7 +186,7 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				box-shadow: 8px 8px 0 var(--shadow-flat);
 				padding: 3rem;
 				flex: 1;
-				transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+				transition: background-color 0.2s ease-in-out;
 			}
 
 			/* Mobile Layout Adjustments */
