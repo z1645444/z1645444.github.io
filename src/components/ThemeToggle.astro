@@ -1,0 +1,149 @@
+---
+---
+<button id="theme-toggle" class="theme-toggle-btn toy-card-interactive" aria-label="Toggle Theme">
+	<div class="toggle-track">
+		<div class="toggle-knob">
+			<!-- Sun Icon -->
+			<svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+				<circle cx="12" cy="12" r="4"></circle>
+				<path d="M12 2v2"></path>
+				<path d="M12 20v2"></path>
+				<path d="M4.93 4.93l1.41 1.41"></path>
+				<path d="M17.66 17.66l1.41 1.41"></path>
+				<path d="M2 12h2"></path>
+				<path d="M20 12h2"></path>
+				<path d="M6.34 17.66l-1.41 1.41"></path>
+				<path d="M19.07 4.93l-1.41 1.41"></path>
+			</svg>
+			<!-- Moon Icon -->
+			<svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+			</svg>
+		</div>
+	</div>
+</button>
+
+<style>
+	.theme-toggle-btn {
+		background: var(--bg-card);
+		border: 3px solid var(--border-color);
+		border-radius: 50px;
+		width: 72px;
+		height: 38px;
+		padding: 0;
+		position: relative;
+		cursor: pointer;
+		box-shadow: 4px 4px 0px var(--shadow-flat);
+		transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease;
+		display: flex;
+		align-items: center;
+	}
+
+	.theme-toggle-btn:hover {
+		transform: translate(-2px, -2px);
+		box-shadow: 6px 6px 0px var(--shadow-flat);
+	}
+
+	.theme-toggle-btn:active {
+		transform: translate(2px, 2px);
+		box-shadow: 2px 2px 0px var(--shadow-flat);
+	}
+
+	.toggle-track {
+		width: 100%;
+		height: 100%;
+		position: relative;
+		border-radius: 50px;
+		overflow: hidden;
+		background-color: var(--bg-page);
+		transition: background-color 0.3s ease;
+	}
+
+	.toggle-knob {
+		width: 28px;
+		height: 28px;
+		background: var(--bg-sidebar);
+		border: 3px solid var(--border-color);
+		border-radius: 50%;
+		position: absolute;
+		top: 2px;
+		left: 2px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), background-color 0.3s ease;
+	}
+
+	/* Light mode styles */
+	.sun-icon {
+		display: block;
+		color: #E28800; /* Warm orange sun */
+	}
+	.moon-icon {
+		display: none;
+	}
+
+	/* Dark mode overrides (knob slides to right, icon swaps) */
+	:global([data-theme="dark"]) .toggle-knob {
+		transform: translateX(34px);
+		background-color: #121316;
+	}
+	:global([data-theme="dark"]) .sun-icon {
+		display: none;
+	}
+	:global([data-theme="dark"]) .moon-icon {
+		display: block;
+		color: #9CAF3F; /* Greenish/yellowish moon */
+	}
+
+	/* Also match system dark setting dynamically if no manual theme class exists */
+	@media (prefers-color-scheme: dark) {
+		:global(:root:not([data-theme="light"])) .toggle-knob {
+			transform: translateX(34px);
+			background-color: #121316;
+		}
+		:global(:root:not([data-theme="light"])) .sun-icon {
+			display: none;
+		}
+		:global(:root:not([data-theme="light"])) .moon-icon {
+			display: block;
+			color: #9CAF3F;
+		}
+	}
+</style>
+
+<script>
+	const themeToggle = document.getElementById('theme-toggle');
+	
+	const getPreferredTheme = () => {
+		const storedTheme = localStorage.getItem('theme');
+		if (storedTheme) return storedTheme;
+		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+	};
+
+	const applyTheme = (theme: string) => {
+		if (theme === 'dark') {
+			document.documentElement.setAttribute('data-theme', 'dark');
+		} else {
+			document.documentElement.setAttribute('data-theme', 'light');
+		}
+		localStorage.setItem('theme', theme);
+	};
+
+	if (themeToggle) {
+		themeToggle.addEventListener('click', () => {
+			const currentTheme = document.documentElement.getAttribute('data-theme') || 
+				(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+			
+			const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+			applyTheme(newTheme);
+		});
+	}
+
+	// Watch for OS preference changes
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+		if (!localStorage.getItem('theme')) {
+			applyTheme(e.matches ? 'dark' : 'light');
+		}
+	});
+</script>

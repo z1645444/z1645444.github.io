@@ -1,0 +1,336 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import ToyLayout from '../../layouts/ToyLayout.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import { SITE_TITLE, QUADRANTS_CONFIG } from '../../consts';
+
+export async function getStaticPaths() {
+	// Generate paths for quadrants that point to category URLs
+	const categories = QUADRANTS_CONFIG.quadrants
+		.filter((q) => q.url.startsWith('/category/'))
+		.map((q) => q.id);
+
+	return categories.map((cat) => ({
+		params: { category: cat },
+	}));
+}
+
+const { category } = Astro.params;
+
+// Find quadrant config
+const quad = QUADRANTS_CONFIG.quadrants.find((q) => q.id === category);
+if (!quad) {
+	throw new Error(`Category ${category} not found in configuration.`);
+}
+
+// Fetch and filter blog posts
+const allPosts = await getCollection('blog');
+const posts = allPosts
+	.filter((post) => post.data.category === category)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Split into featured (latest) and list posts
+const featuredPost = posts[0];
+const listPosts = posts.slice(1);
+---
+
+<ToyLayout 
+	title={`${quad.title} - ${SITE_TITLE}`} 
+	description={quad.description} 
+	activeCategory={category}
+>
+	<div class="category-header">
+		<span class="category-badge">{quad.subtitle}</span>
+		<h1 class="category-title">{quad.title}</h1>
+		<p class="category-desc">{quad.description}</p>
+	</div>
+
+	{posts.length === 0 ? (
+		<div class="empty-state toy-card">
+			<p>该分类下暂无文章，敬请期待！</p>
+		</div>
+	) : (
+		<div class="posts-section">
+			<h2 class="section-title">文章合集</h2>
+			
+			<div class="posts-grid">
+				{/* Featured Post Card */}
+				{featuredPost && (
+					<a href={`/blog/${featuredPost.id}/`} class="toy-card toy-card-interactive featured-card">
+						{featuredPost.data.heroImage && (
+							<div class="featured-image-wrapper">
+								<Image 
+									width={720} 
+									height={360} 
+									src={featuredPost.data.heroImage} 
+									alt={featuredPost.data.title}
+									class="featured-image" 
+								/>
+							</div>
+						)}
+						<div class="card-content">
+							<span class="post-meta-badge">最新发布</span>
+							<h3 class="post-title">{featuredPost.data.title}</h3>
+							<p class="post-date">
+								<FormattedDate date={featuredPost.data.pubDate} />
+							</p>
+							<p class="post-desc">{featuredPost.data.description}</p>
+							<span class="read-more">阅读全文 →</span>
+						</div>
+					</a>
+				)}
+
+				{/* Other List Posts */}
+				{listPosts.map((post) => (
+					<a href={`/blog/${post.id}/`} class="toy-card toy-card-interactive standard-card">
+						{post.data.heroImage && (
+							<div class="card-image-wrapper">
+								<Image 
+									width={360} 
+									height={200} 
+									src={post.data.heroImage} 
+									alt={post.data.title}
+									class="card-image"
+								/>
+							</div>
+						)}
+						<div class="card-content">
+							<span class="post-meta-badge">{quad.subtitle}</span>
+							<h3 class="post-title">{post.data.title}</h3>
+							<p class="post-date">
+								<FormattedDate date={post.data.pubDate} />
+							</p>
+							<p class="post-desc">{post.data.description}</p>
+							<span class="read-more">阅读全文 →</span>
+						</div>
+					</a>
+				))}
+			</div>
+		</div>
+	)}
+</ToyLayout>
+
+<style>
+	/* Header styles */
+
+	/* Header styles */
+	.category-header {
+		margin-bottom: 3rem;
+		padding-bottom: 2rem;
+		border-bottom: 3px dashed var(--border-color);
+	}
+
+	.category-badge {
+		display: inline-block;
+		padding: 0.3rem 0.8rem;
+		background-color: var(--accent);
+		color: #FFFFFF;
+		border: 2px solid var(--border-color);
+		border-radius: 10px;
+		font-size: 0.8rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		margin-bottom: 0.8rem;
+		transition: background-color 0.3s ease;
+	}
+
+	.category-title {
+		font-size: 3rem;
+		font-weight: 900;
+		color: var(--text-main);
+		margin-bottom: 0.8rem;
+		letter-spacing: -1px;
+	}
+
+	.category-desc {
+		font-size: 1.1rem;
+		color: var(--text-muted);
+		max-width: 700px;
+		line-height: 1.6;
+	}
+
+	/* Empty state */
+	.empty-state {
+		text-align: center;
+		padding: 4rem 2rem;
+		font-size: 1.2rem;
+		font-weight: 700;
+		color: var(--text-muted);
+	}
+
+	/* Section Title */
+	.section-title {
+		font-size: 1.6rem;
+		font-weight: 800;
+		margin-bottom: 1.5rem;
+		color: var(--text-main);
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.section-title::after {
+		content: '';
+		flex: 1;
+		height: 3px;
+		background-color: var(--border-color);
+		border-radius: 2px;
+	}
+
+	/* Grid layout for posts */
+	.posts-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 2rem;
+	}
+
+	/* Featured Card Spans Full Width */
+	.featured-card {
+		grid-column: span 2;
+		display: flex;
+		flex-direction: row;
+		gap: 2rem;
+		padding: 2rem;
+		align-items: center;
+	}
+
+	.featured-image-wrapper {
+		flex: 1.2;
+		width: 100%;
+		border-radius: 16px;
+		overflow: hidden;
+		border: 3px solid var(--border-color);
+	}
+
+	.featured-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+		border: none; /* Override default img border since wrapper has it */
+		border-radius: 0;
+	}
+
+	.featured-card .card-content {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	/* Standard Card styling */
+	.standard-card {
+		display: flex;
+		flex-direction: column;
+		padding: 1.5rem;
+	}
+
+	.card-image-wrapper {
+		width: 100%;
+		border-radius: 12px;
+		overflow: hidden;
+		border: 3px solid var(--border-color);
+		margin-bottom: 1.2rem;
+		aspect-ratio: 16 / 9;
+	}
+
+	.card-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+		border: none;
+		border-radius: 0;
+	}
+
+	.standard-card .card-content {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+	}
+
+	/* Inner card text styling */
+	.post-meta-badge {
+		font-size: 0.75rem;
+		font-weight: 800;
+		color: var(--accent);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		margin-bottom: 0.4rem;
+		display: inline-block;
+		transition: color 0.3s ease;
+	}
+
+	.post-title {
+		font-size: 1.6rem;
+		font-weight: 800;
+		color: var(--text-main);
+		margin-bottom: 0.4rem;
+		line-height: 1.3;
+	}
+
+	.featured-card .post-title {
+		font-size: 2rem;
+	}
+
+	.post-date {
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: var(--text-muted);
+		margin-bottom: 1rem;
+	}
+
+	.post-desc {
+		font-size: 0.95rem;
+		color: var(--text-muted);
+		margin-bottom: 1.5rem;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		flex: 1;
+	}
+
+	.read-more {
+		font-weight: 800;
+		color: var(--accent);
+		font-size: 0.95rem;
+		align-self: flex-start;
+		transition: transform 0.2s ease, color 0.3s ease;
+	}
+
+	.toy-card-interactive:hover .read-more {
+		transform: translateX(4px);
+		color: var(--accent-dark);
+	}
+
+	/* Responsive layouts */
+	@media (max-width: 900px) {
+		.featured-card {
+			flex-direction: column;
+			gap: 1.5rem;
+			padding: 1.5rem;
+		}
+
+		.featured-image-wrapper {
+			flex: none;
+			aspect-ratio: 16 / 9;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.posts-grid {
+			grid-template-columns: 1fr;
+			gap: 1.5rem;
+		}
+
+		.featured-card {
+			grid-column: span 1;
+		}
+
+		.category-title {
+			font-size: 2.2rem;
+		}
+	}
+</style>

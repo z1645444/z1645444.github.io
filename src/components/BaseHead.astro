@@ -50,3 +50,18 @@ const { title, description, image = FallbackImage } = Astro.props;
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
+
+<!-- Theme FOUC Prevention Script -->
+<script is:inline>
+	(function() {
+		const storedTheme = localStorage.getItem('theme');
+		const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+		const activeTheme = storedTheme || (prefersDark ? 'dark' : 'light');
+		
+		if (activeTheme === 'dark') {
+			document.documentElement.setAttribute('data-theme', 'dark');
+		} else {
+			document.documentElement.setAttribute('data-theme', 'light');
+		}
+	})();
+</script>

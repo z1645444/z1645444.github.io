@@ -1,49 +1,241 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import QuadrantIcon from '../components/QuadrantIcon.astro';
+import { SITE_TITLE, SITE_DESCRIPTION, QUADRANTS_CONFIG } from '../consts';
+
+const N = QUADRANTS_CONFIG.quadrants.length;
+const isOdd = N % 2 !== 0;
+const fullWidthIndex = isOdd
+	? (QUADRANTS_CONFIG.oddLayout === 'top-heavy' ? Math.floor(N / 2) : N - 1)
+	: -1;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			/* Centered full viewport layout */
+			.homepage-container {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				min-height: 100vh;
+				padding: 2rem;
+			}
+
+			/* Large canvas box */
+			.toy-box-canvas {
+				background-color: var(--bg-canvas);
+				border: 3px solid var(--border-color);
+				border-radius: 36px;
+				box-shadow: 10px 10px 0px var(--shadow-flat);
+				width: 100%;
+				max-width: 900px;
+				padding: 3rem;
+				display: flex;
+				flex-direction: column;
+				gap: 2.5rem;
+				transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+			}
+
+			/* Canvas Top Header */
+			.canvas-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding-bottom: 1.5rem;
+				border-bottom: 3px dashed var(--border-color);
+			}
+
+			.canvas-title {
+				font-size: 2.2rem;
+				font-weight: 900;
+				letter-spacing: -1px;
+				color: var(--text-main);
+			}
+
+			.logo-dot {
+				color: var(--accent);
+				transition: color 0.3s ease;
+			}
+
+			.canvas-desc {
+				font-size: 1rem;
+				font-weight: 500;
+				color: var(--text-muted);
+				margin-top: 0.2rem;
+			}
+
+			/* Quadrant Grid */
+			.quadrant-grid {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				gap: 2rem;
+			}
+
+			/* Quadrant Cards */
+			.quadrant-card {
+				background-color: var(--quad-color-light);
+				color: #FFFFFF;
+				border: 3px solid var(--border-color);
+				border-radius: 28px;
+				box-shadow: 6px 6px 0px var(--shadow-flat);
+				padding: 3rem 2rem;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				text-align: center;
+				text-decoration: none;
+				position: relative;
+				transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, background-color 0.3s ease;
+			}
+
+			/* Apply dark mode quadrant colors */
+			:root[data-theme="dark"] .quadrant-card {
+				background-color: var(--quad-color-dark);
+			}
+			@media (prefers-color-scheme: dark) {
+				:root:not([data-theme="light"]) .quadrant-card {
+					background-color: var(--quad-color-dark);
+				}
+			}
+
+			.quadrant-card:hover {
+				transform: translate(-3px, -3px);
+				box-shadow: 9px 9px 0px var(--shadow-flat);
+			}
+
+			.quadrant-card:active {
+				transform: translate(3px, 3px);
+				box-shadow: 3px 3px 0px var(--shadow-flat);
+			}
+
+			/* Odd configuration: full-width span */
+			.quadrant-card.full-width {
+				grid-column: span 2;
+				flex-direction: row;
+				justify-content: center;
+				gap: 2.5rem;
+				padding: 2.5rem 3rem;
+			}
+
+			.quadrant-card.full-width .icon-circle {
+				margin-bottom: 0;
+			}
+
+			.quadrant-card.full-width .card-text {
+				text-align: left;
+			}
+
+			/* Circle Icon Wrapper */
+			.icon-circle {
+				width: 64px;
+				height: 64px;
+				border-radius: 50%;
+				background-color: rgba(255, 255, 255, 0.2);
+				border: 3px solid #FFFFFF;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin-bottom: 1.2rem;
+				transition: transform 0.2s ease;
+			}
+
+			.quadrant-card:hover .icon-circle {
+				transform: scale(1.1) rotate(-5deg);
+			}
+
+			.card-text {
+				display: flex;
+				flex-direction: column;
+				gap: 0.2rem;
+			}
+
+			.big-title {
+				font-size: 2.4rem;
+				font-weight: 800;
+				color: #FFFFFF;
+			}
+
+			.small-title {
+				font-size: 0.9rem;
+				font-weight: 700;
+				letter-spacing: 2px;
+				text-transform: uppercase;
+				opacity: 0.9;
+				color: #FFFFFF;
+			}
+
+			/* Responsive styling */
+			@media (max-width: 768px) {
+				.toy-box-canvas {
+					padding: 2rem;
+					border-radius: 28px;
+				}
+
+				.quadrant-grid {
+					grid-template-columns: 1fr;
+					gap: 1.5rem;
+				}
+
+				.quadrant-card.full-width {
+					grid-column: span 1;
+					flex-direction: column;
+					gap: 1.2rem;
+					padding: 2.5rem 2rem;
+				}
+
+				.quadrant-card.full-width .icon-circle {
+					margin-bottom: 0;
+				}
+
+				.quadrant-card.full-width .card-text {
+					text-align: center;
+				}
+
+				.big-title {
+					font-size: 2rem;
+				}
+			}
+		</style>
 	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
+	<body class="workbench-bg">
+		<div class="homepage-container">
+			<div class="toy-box-canvas">
+				<!-- Header inside Canvas -->
+				<header class="canvas-header">
+					<div>
+						<h1 class="canvas-title">{SITE_TITLE}<span class="logo-dot">.</span></h1>
+						<p class="canvas-desc">极简玩具感个人博客系统</p>
+					</div>
+					<ThemeToggle />
+				</header>
+
+				<!-- Grid of Quadrants -->
+				<div class="quadrant-grid">
+					{QUADRANTS_CONFIG.quadrants.map((quad, idx) => {
+						const isFullWidth = idx === fullWidthIndex;
+						return (
+							<a 
+								href={quad.url} 
+								class={`quadrant-card ${isFullWidth ? 'full-width' : ''}`}
+								style={`--quad-color-light: ${quad.colorLight}; --quad-color-dark: ${quad.colorDark};`}
+							>
+								<div class="icon-circle">
+									<QuadrantIcon name={quad.icon} size={28} />
+								</div>
+								<div class="card-text">
+									<span class="big-title">{quad.title}</span>
+									<span class="small-title">{quad.subtitle}</span>
+								</div>
+							</a>
+						);
+					})}
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

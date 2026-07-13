@@ -1,86 +1,163 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
+import ToyLayout from './ToyLayout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & {
+	category?: string;
+};
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, category } = Astro.props;
+
+// Determine active category. If title matches 'About Me', default to 'about'
+const activeCategory = category || (title.toLowerCase().includes('about') ? 'about' : '');
 ---
 
-<html lang="en">
-	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
-	</head>
+<ToyLayout title={title} description={description} activeCategory={activeCategory}>
+	<article class="post-article">
+		{heroImage && (
+			<div class="article-hero-wrapper">
+				<Image width={960} height={480} src={heroImage} alt={title} class="article-hero-image" />
+			</div>
+		)}
+		
+		<div class="article-meta">
+			<div class="article-date">
+				<FormattedDate date={pubDate} />
+				{updatedDate && (
+					<span class="last-updated">
+						（已于 <FormattedDate date={updatedDate} /> 更新）
+					</span>
+				)}
+			</div>
+			<h1 class="article-title">{title}</h1>
+			<p class="article-desc">{description}</p>
+			<hr class="article-divider" />
+		</div>
 
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
-</html>
+		<div class="prose">
+			<slot />
+		</div>
+	</article>
+</ToyLayout>
+
+<style>
+	.post-article {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
+
+	.article-hero-wrapper {
+		width: 100%;
+		border-radius: 20px;
+		overflow: hidden;
+		border: 3px solid var(--border-color);
+		aspect-ratio: 21 / 9;
+	}
+
+	.article-hero-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+		border: none;
+		border-radius: 0;
+	}
+
+	.article-meta {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+	}
+
+	.article-date {
+		font-size: 0.9rem;
+		font-weight: 700;
+		color: var(--text-muted);
+	}
+
+	.last-updated {
+		font-style: italic;
+		color: var(--accent);
+		margin-left: 0.5rem;
+	}
+
+	.article-title {
+		font-size: 2.8rem;
+		font-weight: 900;
+		color: var(--text-main);
+		line-height: 1.2;
+		letter-spacing: -1px;
+	}
+
+	.article-desc {
+		font-size: 1.15rem;
+		color: var(--text-muted);
+		line-height: 1.6;
+	}
+
+	.article-divider {
+		border: none;
+		border-top: 3px dashed var(--border-color);
+		margin: 1rem 0 0 0;
+	}
+
+	/* Style the rendered markdown content */
+	.prose {
+		color: var(--text-main);
+		font-size: 1.1rem;
+		line-height: 1.8;
+	}
+
+	.prose :global(p) {
+		margin-bottom: 1.5rem;
+	}
+
+	.prose :global(h2) {
+		font-size: 1.8rem;
+		font-weight: 800;
+		margin: 2.5rem 0 1rem 0;
+		border-bottom: 3px solid var(--border-color);
+		padding-bottom: 0.3rem;
+		display: inline-block;
+	}
+
+	.prose :global(h3) {
+		font-size: 1.4rem;
+		font-weight: 700;
+		margin: 2rem 0 1rem 0;
+	}
+
+	.prose :global(ul), .prose :global(ol) {
+		margin-bottom: 1.5rem;
+		padding-left: 2rem;
+	}
+
+	.prose :global(li) {
+		margin-bottom: 0.5rem;
+	}
+
+	.prose :global(a) {
+		font-weight: 700;
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 4px;
+	}
+
+	.prose :global(img) {
+		margin: 2rem 0;
+		box-shadow: 6px 6px 0px var(--shadow-flat);
+	}
+
+	@media (max-width: 768px) {
+		.article-title {
+			font-size: 2.2rem;
+		}
+		
+		.article-hero-wrapper {
+			aspect-ratio: 16 / 9;
+		}
+	}
+</style>

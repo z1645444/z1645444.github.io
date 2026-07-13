@@ -1,0 +1,312 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import QuadrantIcon from '../components/QuadrantIcon.astro';
+import { SITE_TITLE, SITE_DESCRIPTION, QUADRANTS_CONFIG } from '../consts';
+
+interface Props {
+	title?: string;
+	description?: string;
+	activeCategory?: string; // id of active quadrant: 'build' | 'explore' | 'observe' | 'about'
+}
+
+const { 
+	title = SITE_TITLE, 
+	description = SITE_DESCRIPTION, 
+	activeCategory = '' 
+} = Astro.props;
+
+// Find active quadrant configuration
+const activeQuad = QUADRANTS_CONFIG.quadrants.find(q => q.id === activeCategory);
+const accentColorLight = activeQuad ? activeQuad.colorLight : '#3A828A';
+const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={title} description={description} />
+		<!-- Dynamically override accent color variables based on category and theme -->
+		<style define:vars={{ accentColorLight, accentColorDark }}>
+			:root {
+				--accent: var(--accentColorLight);
+			}
+			:root[data-theme="dark"] {
+				--accent: var(--accentColorDark);
+			}
+			@media (prefers-color-scheme: dark) {
+				:root:not([data-theme="light"]) {
+					--accent: var(--accentColorDark);
+				}
+			}
+		</style>
+		<style>
+			/* Layout styling */
+			.app-container {
+				display: flex;
+				min-height: 100vh;
+				background-color: var(--bg-page);
+				transition: background-color 0.3s ease;
+			}
+
+			/* Sidebar Section */
+			.sidebar {
+				width: 300px;
+				min-width: 300px;
+				background-color: var(--bg-sidebar);
+				border-right: 3px solid var(--border-color);
+				padding: 2.5rem 2rem;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				position: sticky;
+				top: 0;
+				height: 100vh;
+				z-index: 100;
+				transition: background-color 0.3s ease, border-color 0.3s ease;
+			}
+
+			.sidebar-top {
+				display: flex;
+				flex-direction: column;
+				gap: 2.5rem;
+			}
+
+			.logo {
+				font-family: var(--font-atkinson);
+				font-size: 2.2rem;
+				font-weight: 900;
+				letter-spacing: -1px;
+				color: var(--text-main);
+				text-decoration: none;
+				display: inline-block;
+				transition: transform 0.2s ease;
+			}
+			.logo:hover {
+				transform: rotate(-2deg) scale(1.03);
+			}
+
+			.logo-dot {
+				color: var(--accent);
+				transition: color 0.3s ease;
+			}
+
+			/* Navigation List */
+			.nav-list {
+				display: flex;
+				flex-direction: column;
+				gap: 1rem;
+				list-style: none;
+				padding: 0;
+			}
+
+			.nav-item-link {
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+				padding: 0.8rem 1.2rem;
+				font-weight: 700;
+				font-size: 1.1rem;
+				color: var(--text-main);
+				text-decoration: none;
+				border: 3px solid transparent;
+				border-radius: 16px;
+				transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+			}
+
+			.nav-item-link:hover {
+				background-color: rgba(0,0,0,0.03);
+				border-color: var(--border-color);
+				transform: translate(-2px, -2px);
+				box-shadow: 4px 4px 0 var(--shadow-flat);
+			}
+			:global([data-theme="dark"]) .nav-item-link:hover {
+				background-color: rgba(255,255,255,0.03);
+			}
+
+			.nav-item-link:active {
+				transform: translate(2px, 2px);
+				box-shadow: 1px 1px 0 var(--shadow-flat);
+			}
+
+			/* Active Link Styles */
+			.nav-item-link.active {
+				background-color: var(--accent);
+				color: #FFFFFF;
+				border-color: var(--border-color);
+				box-shadow: 4px 4px 0 var(--shadow-flat);
+			}
+
+			.nav-item-link.active .icon-wrapper {
+				background-color: rgba(255,255,255,0.2);
+				border-color: #FFFFFF;
+			}
+
+			.icon-wrapper {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 38px;
+				height: 38px;
+				border-radius: 10px;
+				border: 2px solid var(--border-color);
+				background-color: var(--bg-card);
+				transition: background-color 0.3s ease, border-color 0.3s ease;
+			}
+
+			.sidebar-bottom {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding-top: 1.5rem;
+				border-top: 3px dashed var(--border-color);
+			}
+
+			.sidebar-bottom-label {
+				font-size: 0.9rem;
+				font-weight: 700;
+				color: var(--text-muted);
+			}
+
+			/* Main Content Area */
+			.main-content {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				min-height: 100vh;
+				padding: 3rem 4rem;
+				overflow-y: auto;
+			}
+
+			/* Content Container */
+			.content-card {
+				background-color: var(--bg-canvas);
+				border: 3px solid var(--border-color);
+				border-radius: 32px;
+				box-shadow: 8px 8px 0 var(--shadow-flat);
+				padding: 3rem;
+				flex: 1;
+				transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+			}
+
+			/* Mobile Layout Adjustments */
+			@media (max-width: 1024px) {
+				.app-container {
+					flex-direction: column;
+				}
+
+				.sidebar {
+					width: 100%;
+					height: auto;
+					position: relative;
+					border-right: none;
+					border-bottom: 3px solid var(--border-color);
+					padding: 1.5rem;
+					gap: 1.5rem;
+				}
+
+				.sidebar-top {
+					gap: 1.5rem;
+					flex-direction: row;
+					align-items: center;
+					justify-content: space-between;
+				}
+
+				.logo {
+					font-size: 1.8rem;
+				}
+
+				.nav-list {
+					flex-direction: row;
+					flex-wrap: wrap;
+					gap: 0.5rem;
+					width: 100%;
+				}
+
+				.nav-item-link {
+					padding: 0.5rem 1rem;
+					font-size: 1rem;
+					gap: 0.5rem;
+				}
+
+				.icon-wrapper {
+					width: 28px;
+					height: 28px;
+				}
+				.icon-wrapper svg {
+					width: 16px;
+					height: 16px;
+				}
+
+				.sidebar-bottom {
+					border-top: none;
+					padding-top: 0;
+					gap: 1rem;
+				}
+
+				.sidebar-bottom-label {
+					display: none;
+				}
+
+				.main-content {
+					padding: 1.5rem;
+				}
+
+				.content-card {
+					padding: 1.5rem;
+					border-radius: 24px;
+					box-shadow: 6px 6px 0 var(--shadow-flat);
+				}
+			}
+
+			@media (max-width: 640px) {
+				.sidebar-top {
+					flex-direction: column;
+					align-items: flex-start;
+				}
+				.sidebar-bottom {
+					width: 100%;
+					justify-content: flex-end;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="app-container">
+			<!-- Sidebar -->
+			<aside class="sidebar">
+				<div class="sidebar-top">
+					<a href="/" class="logo">
+						{SITE_TITLE}<span class="logo-dot">.</span>
+					</a>
+					<ul class="nav-list">
+						{QUADRANTS_CONFIG.quadrants.map((quad) => (
+							<li>
+								<a 
+									href={quad.url} 
+									class={`nav-item-link ${activeCategory === quad.id ? 'active' : ''}`}
+								>
+									<span class="icon-wrapper">
+										<QuadrantIcon name={quad.icon} size={20} />
+									</span>
+									<span>{quad.title}</span>
+								</a>
+							</li>
+						))}
+					</ul>
+				</div>
+				<div class="sidebar-bottom">
+					<span class="sidebar-bottom-label">主题样式</span>
+					<ThemeToggle />
+				</div>
+			</aside>
+
+			<!-- Main Area -->
+			<main class="main-content">
+				<div class="content-card">
+					<slot />
+				</div>
+			</main>
+		</div>
+	</body>
+</html>
