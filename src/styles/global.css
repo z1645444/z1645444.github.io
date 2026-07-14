@@ -26,19 +26,19 @@
 }
 
 :root[data-theme="dark"] {
-	/* Color Tokens - Dark Mode (Option 2: Cyber Indigo Console) */
-	--bg-home: #1A1B2F;       /* Deep polar midnight indigo background */
-	--bg-canvas: #22243F;     /* Indigo night canvas container */
-	--bg-sidebar: #272A4A;    /* Space cabin dark purple sidebar */
-	--bg-page: #1A1B2F;       /* Dark category page */
-	--bg-card: #22243F;       /* Dark card background */
+	/* Color Tokens - Dark Mode (Option 3: Chocolate Toy Factory) */
+	--bg-home: #211D1C;       /* Deep warm dark espresso background */
+	--bg-canvas: #2D2725;     /* Dark chocolate canvas container */
+	--bg-sidebar: #332C2A;    /* Muted warm cocoa sidebar */
+	--bg-page: #211D1C;       /* Dark category page */
+	--bg-card: #2D2725;       /* Dark card background */
 	
-	--text-main: #ECEEFA;     /* Ice lavender off-white text */
-	--text-muted: #9EA4C2;    /* Muted lavender text */
-	--border-color: #6C729C;  /* Muted neon lavender-gray border */
-	--shadow-flat: #10111F;   /* Deep indigo shadow */
-	--shadow-color: rgba(16, 17, 31, 0.4);
-	--dot-color: rgba(108, 114, 156, 0.08);
+	--text-main: #F5ECE8;     /* Warm vanilla cream text */
+	--text-muted: #AFA19B;    /* Muted clay text */
+	--border-color: #7A6A65;  /* Terracotta clay/gray border */
+	--shadow-flat: #141110;   /* Deep espresso shadow */
+	--shadow-color: rgba(20, 17, 16, 0.4);
+	--dot-color: rgba(122, 106, 101, 0.08);
 
 	--accent: #4C9F9B;
 	--accent-dark: #6BD9D4;
@@ -47,18 +47,18 @@
 /* Auto match system dark theme if no manual choice is selected */
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme="light"]) {
-		--bg-home: #1A1B2F;
-		--bg-canvas: #22243F;
-		--bg-sidebar: #272A4A;
-		--bg-page: #1A1B2F;
-		--bg-card: #22243F;
+		--bg-home: #211D1C;
+		--bg-canvas: #2D2725;
+		--bg-sidebar: #332C2A;
+		--bg-page: #211D1C;
+		--bg-card: #2D2725;
 		
-		--text-main: #ECEEFA;
-		--text-muted: #9EA4C2;
-		--border-color: #6C729C;
-		--shadow-flat: #10111F;
-		--shadow-color: rgba(16, 17, 31, 0.4);
-		--dot-color: rgba(108, 114, 156, 0.08);
+		--text-main: #F5ECE8;
+		--text-muted: #AFA19B;
+		--border-color: #7A6A65;
+		--shadow-flat: #141110;
+		--shadow-color: rgba(20, 17, 16, 0.4);
+		--dot-color: rgba(122, 106, 101, 0.08);
 
 		--accent: #4C9F9B;
 		--accent-dark: #6BD9D4;
