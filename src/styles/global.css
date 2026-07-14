@@ -26,42 +26,42 @@
 }
 
 :root[data-theme="dark"] {
-	/* Color Tokens - Dark Mode (Option 3: Chocolate Toy Factory) */
-	--bg-home: #211D1C;       /* Deep warm dark espresso background */
-	--bg-canvas: #2D2725;     /* Dark chocolate canvas container */
-	--bg-sidebar: #332C2A;    /* Muted warm cocoa sidebar */
-	--bg-page: #211D1C;       /* Dark category page */
-	--bg-card: #2D2725;       /* Dark card background */
+	/* Color Tokens - Dark Mode (Gruvbox Dark Retro) */
+	--bg-home: #1d2021;       /* Gruvbox dark0_hard */
+	--bg-canvas: #282828;     /* Gruvbox dark0 */
+	--bg-sidebar: #3c3836;    /* Gruvbox dark1 */
+	--bg-page: #1d2021;       
+	--bg-card: #282828;       
 	
-	--text-main: #F5ECE8;     /* Warm vanilla cream text */
-	--text-muted: #AFA19B;    /* Muted clay text */
-	--border-color: #7A6A65;  /* Terracotta clay/gray border */
-	--shadow-flat: #141110;   /* Deep espresso shadow */
-	--shadow-color: rgba(20, 17, 16, 0.4);
-	--dot-color: rgba(122, 106, 101, 0.08);
+	--text-main: #ebdbb2;     /* Gruvbox light1 (warm cream) */
+	--text-muted: #a89984;    /* Gruvbox light4 (warm gray) */
+	--border-color: #7c6f64;  /* Gruvbox dark4 (muted gray-brown) */
+	--shadow-flat: #1d2021;   /* Retro hard shadow (matches base) */
+	--shadow-color: rgba(29, 32, 33, 0.5);
+	--dot-color: rgba(124, 111, 100, 0.08);
 
-	--accent: #4C9F9B;
-	--accent-dark: #6BD9D4;
+	--accent: #8ec07c;        /* Gruvbox aqua */
+	--accent-dark: #689d6a;   /* Gruvbox aqua dark */
 }
 
 /* Auto match system dark theme if no manual choice is selected */
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme="light"]) {
-		--bg-home: #211D1C;
-		--bg-canvas: #2D2725;
-		--bg-sidebar: #332C2A;
-		--bg-page: #211D1C;
-		--bg-card: #2D2725;
+		--bg-home: #1d2021;
+		--bg-canvas: #282828;
+		--bg-sidebar: #3c3836;
+		--bg-page: #1d2021;
+		--bg-card: #282828;
 		
-		--text-main: #F5ECE8;
-		--text-muted: #AFA19B;
-		--border-color: #7A6A65;
-		--shadow-flat: #141110;
-		--shadow-color: rgba(20, 17, 16, 0.4);
-		--dot-color: rgba(122, 106, 101, 0.08);
+		--text-main: #ebdbb2;
+		--text-muted: #a89984;
+		--border-color: #7c6f64;
+		--shadow-flat: #1d2021;
+		--shadow-color: rgba(29, 32, 33, 0.5);
+		--dot-color: rgba(124, 111, 100, 0.08);
 
-		--accent: #4C9F9B;
-		--accent-dark: #6BD9D4;
+		--accent: #8ec07c;
+		--accent-dark: #689d6a;
 	}
 }
 
