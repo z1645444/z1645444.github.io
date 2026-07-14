@@ -2,27 +2,27 @@
 :root {
 	color-scheme: light dark;
 
-	/* Color Tokens - Light Mode */
-	--bg-home: #FAF6EE;       /* Warm workbench cream background */
-	--bg-canvas: #FFFFFF;     /* White canvas container */
-	--bg-sidebar: #FEF7DD;    /* Pastel yellow sidebar */
-	--bg-page: #EAEFF1;       /* Soft sky blue category background */
-	--bg-card: #FFFFFF;       /* Standard card background */
+	/* Color Tokens - Light Mode (Gruvbox Light Retro) */
+	--bg-home: #f9f5d7;       /* Gruvbox light0_hard */
+	--bg-canvas: #fbf1c7;     /* Gruvbox light0 */
+	--bg-sidebar: #f2e5bc;    /* Gruvbox light0_soft */
+	--bg-page: #f9f5d7;       
+	--bg-card: #fbf1c7;       
 	
-	--text-main: #2C2824;     /* Deep dark charcoal/brown text */
-	--text-muted: #6B655F;    /* Soft gray-brown description text */
-	--border-color: #2C2824;  /* Chunky black border */
-	--shadow-flat: #2C2824;   /* Hard shadow matching the border */
-	--shadow-color: rgba(44, 40, 36, 0.1);
-	--dot-color: rgba(44, 40, 36, 0.08); /* Workbench dots */
+	--text-main: #282828;     /* Gruvbox dark0 */
+	--text-muted: #7c6f64;    /* Gruvbox dark4 */
+	--border-color: #282828;  
+	--shadow-flat: #282828;   
+	--shadow-color: rgba(40, 40, 40, 0.4);
+	--dot-color: rgba(124, 111, 100, 0.12);
 
 	/* Fonts */
 	--font-atkinson: 'Atkinson', sans-serif;
 	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
 	/* Accent Default */
-	--accent: #3A828A;
-	--accent-dark: #2A5D63;
+	--accent: #689d6a;        /* Gruvbox aqua hard */
+	--accent-dark: #458588;   /* Gruvbox blue hard */
 }
 
 :root[data-theme="dark"] {
