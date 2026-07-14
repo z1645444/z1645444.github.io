@@ -117,43 +117,63 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 			}
 
+			/* Hover State - Inactive Link (Soft Translucent Tint) */
 			.nav-item-link:hover {
-				background-color: var(--hover-color-light);
-				color: #FFFFFF;
+				background-color: color-mix(in srgb, var(--hover-color-light) 12%, transparent);
+				color: var(--hover-color-light);
 				border-color: var(--border-color);
 				transform: translate(-2px, -2px);
 				box-shadow: 3px 3px 0 var(--shadow-flat);
 			}
+			.nav-item-link:hover .icon-wrapper {
+				border-color: var(--hover-color-light);
+			}
 			:global([data-theme="dark"]) .nav-item-link:hover {
-				background-color: var(--hover-color-dark);
-				color: #FFFFFF;
+				background-color: color-mix(in srgb, var(--hover-color-dark) 18%, transparent);
+				color: var(--hover-color-dark);
+			}
+			:global([data-theme="dark"]) .nav-item-link:hover .icon-wrapper {
+				border-color: var(--hover-color-dark);
 			}
 			@media (prefers-color-scheme: dark) {
 				:global(:root:not([data-theme="light"])) .nav-item-link:hover {
-					background-color: var(--hover-color-dark);
-					color: #FFFFFF;
+					background-color: color-mix(in srgb, var(--hover-color-dark) 18%, transparent);
+					color: var(--hover-color-dark);
+				}
+				:global(:root:not([data-theme="light"])) .nav-item-link:hover .icon-wrapper {
+					border-color: var(--hover-color-dark);
 				}
 			}
-			.nav-item-link:hover .icon-wrapper {
-				background-color: rgba(255, 255, 255, 0.2);
-				border-color: #FFFFFF;
-			}
 
+			/* Click/Press State (Both active and inactive) */
 			.nav-item-link:active {
 				transform: translate(2px, 2px);
 				box-shadow: 1px 1px 0 var(--shadow-flat);
 			}
 
-			/* Active Link Styles */
+			/* Active Link Styles (Flat by default for horizontal top bar alignment) */
 			.nav-item-link.active {
 				background-color: var(--accent);
 				color: #FFFFFF;
 				border-color: var(--border-color);
-				box-shadow: 3px 3px 0 var(--shadow-flat);
+				transform: none;
+				box-shadow: none;
 			}
-
 			.nav-item-link.active .icon-wrapper {
 				background-color: rgba(255,255,255,0.2);
+				border-color: #FFFFFF;
+			}
+
+			/* Active Link Hover State (Lifts up on hover) */
+			.nav-item-link.active:hover {
+				background-color: var(--accent-dark);
+				color: #FFFFFF;
+				border-color: var(--border-color);
+				transform: translate(-2px, -2px);
+				box-shadow: 3px 3px 0 var(--shadow-flat);
+			}
+			.nav-item-link.active:hover .icon-wrapper {
+				background-color: rgba(255,255,255,0.25);
 				border-color: #FFFFFF;
 			}
 
