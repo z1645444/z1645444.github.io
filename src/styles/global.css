@@ -17,8 +17,8 @@
 	--dot-color: rgba(44, 40, 36, 0.08); /* Workbench dots */
 
 	/* Fonts */
-	--font-atkinson: 'Outfit', sans-serif;
-	--font-mono: 'JetBrains Mono', monospace;
+	--font-atkinson: 'Atkinson', sans-serif;
+	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
 	/* Accent Default */
 	--accent: #3A828A;
