@@ -355,10 +355,19 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				}
 
 				.nav-list {
-					flex-wrap: wrap;
-					justify-content: center;
+					display: grid;
+					grid-template-columns: repeat(2, 1fr);
 					gap: 0.5rem;
 					width: 100%;
+				}
+
+				.nav-list li {
+					width: 100%;
+				}
+
+				.nav-list li .nav-item-link {
+					width: 100%;
+					justify-content: center;
 				}
 
 				.sidebar-bottom {
