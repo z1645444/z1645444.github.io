@@ -1,63 +1,30 @@
-# Astro Starter Kit: Blog
+# Chromatic
 
-```sh
-pnpm create astro@latest -- --template blog
-```
+Chromatic 是一个基于 Astro 构建的玩具盒 (Toy-Box) 风格个人博客，具有生动、可触感的交互界面设计。
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 项目特点
 
-Features:
+- 基于 Astro 构建，具有优秀的加载性能与 SEO 体验。
+- 采用模块化的玩具盒式四象限导航设计（建造、探索、观察、关于）。
+- 原生支持 Markdown 与 MDX 文章。
+- 自动生成 RSS 订阅源与站点地图。
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+## 目录结构
 
-## 🚀 Project Structure
+- `src/pages/` - 页面与路由
+- `src/content/` - 博客文章与配置定义
+- `src/components/` - UI 组件
+- `src/layouts/` - 页面模版
+- `src/styles/` - 全局样式与主题配置
 
-Inside of your Astro project, you'll see the following folders and files:
+## 常用命令
 
-```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
-```
+项目使用 pnpm 进行包管理。
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+| 命令 | 描述 |
+| :--- | :--- |
+| `pnpm install` | 安装项目依赖 |
+| `pnpm dev` | 启动本地开发服务器，默认端口 4321 |
+| `pnpm build` | 编译生成用于生产环境的静态站点 |
+| `pnpm preview` | 在本地预览生产环境构建效果 |
+| `pnpm astro [command]` | 执行 Astro 命令行工具 |
