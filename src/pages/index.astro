@@ -177,27 +177,95 @@ const fullWidthIndex = isOdd
 				}
 
 				.quadrant-grid {
-					grid-template-columns: 1fr;
+					grid-template-columns: repeat(2, 1fr);
 					gap: 1.5rem;
 				}
 
+				.quadrant-card {
+					padding: 2rem 1.2rem;
+					border-radius: 20px;
+				}
+
 				.quadrant-card.full-width {
-					grid-column: span 1;
-					flex-direction: column;
-					gap: 1.2rem;
-					padding: 2.5rem 2rem;
+					grid-column: span 2;
+					flex-direction: row;
+					justify-content: center;
+					gap: 1.5rem;
+					padding: 1.5rem 2rem;
+				}
+
+				.icon-circle {
+					width: 48px;
+					height: 48px;
+					margin-bottom: 0.8rem;
+				}
+
+				.icon-circle :global(svg) {
+					width: 22px;
+					height: 22px;
 				}
 
 				.quadrant-card.full-width .icon-circle {
 					margin-bottom: 0;
 				}
 
-				.quadrant-card.full-width .card-text {
-					text-align: center;
+				.big-title {
+					font-size: 1.6rem;
+				}
+
+				.small-title {
+					font-size: 0.8rem;
+					letter-spacing: 1px;
+				}
+			}
+
+			@media (max-width: 480px) {
+				.toy-box-canvas {
+					padding: 1.5rem 1rem;
+					border-radius: 20px;
+					gap: 1.5rem;
+				}
+
+				.canvas-header {
+					padding-bottom: 1rem;
+				}
+
+				.canvas-title {
+					font-size: 1.6rem;
+				}
+
+				.quadrant-grid {
+					gap: 1rem;
+				}
+
+				.quadrant-card {
+					padding: 1.5rem 0.8rem;
+					border-radius: 16px;
+				}
+
+				.quadrant-card.full-width {
+					gap: 1rem;
+					padding: 1.2rem 1.5rem;
+				}
+
+				.icon-circle {
+					width: 40px;
+					height: 40px;
+					margin-bottom: 0.6rem;
+				}
+
+				.icon-circle :global(svg) {
+					width: 18px;
+					height: 18px;
 				}
 
 				.big-title {
-					font-size: 2rem;
+					font-size: 1.2rem;
+				}
+
+				.small-title {
+					font-size: 0.75rem;
+					letter-spacing: 0.5px;
 				}
 			}
 		</style>
