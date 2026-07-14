@@ -35,9 +35,9 @@
 	
 	--text-main: #ECF0F3;     /* Light text */
 	--text-muted: #959EA8;    /* Muted text */
-	--border-color: #ECF0F3;  /* Chunky white border */
-	--shadow-flat: #ECF0F3;   /* Hard white shadow */
-	--shadow-color: rgba(0, 0, 0, 0.3);
+	--border-color: #5C6374;  /* Muted slate-gray border */
+	--shadow-flat: #2C2F38;   /* Soft dark slate shadow */
+	--shadow-color: rgba(0, 0, 0, 0.4);
 	--dot-color: rgba(236, 240, 243, 0.06);
 
 	--accent: #4C9F9B;
@@ -55,9 +55,9 @@
 		
 		--text-main: #ECF0F3;
 		--text-muted: #959EA8;
-		--border-color: #ECF0F3;
-		--shadow-flat: #ECF0F3;
-		--shadow-color: rgba(0, 0, 0, 0.3);
+		--border-color: #5C6374;
+		--shadow-flat: #2C2F38;
+		--shadow-color: rgba(0, 0, 0, 0.4);
 		--dot-color: rgba(236, 240, 243, 0.06);
 
 		--accent: #4C9F9B;
