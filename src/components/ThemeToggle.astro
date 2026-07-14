@@ -26,14 +26,14 @@
 <style>
 	.theme-toggle-btn {
 		background: var(--bg-card);
-		border: 3px solid var(--border-color);
+		border: 2px solid var(--border-color);
 		border-radius: 50px;
 		width: 72px;
 		height: 38px;
 		padding: 0;
 		position: relative;
 		cursor: pointer;
-		box-shadow: 4px 4px 0px var(--shadow-flat);
+		box-shadow: 3px 3px 0px var(--shadow-flat);
 		transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 		display: flex;
 		align-items: center;
@@ -41,12 +41,12 @@
 
 	.theme-toggle-btn:hover {
 		transform: translate(-2px, -2px);
-		box-shadow: 6px 6px 0px var(--shadow-flat);
+		box-shadow: 4px 4px 0px var(--shadow-flat);
 	}
 
 	.theme-toggle-btn:active {
 		transform: translate(2px, 2px);
-		box-shadow: 2px 2px 0px var(--shadow-flat);
+		box-shadow: 1px 1px 0px var(--shadow-flat);
 	}
 
 	.toggle-track {
@@ -63,11 +63,11 @@
 		width: 28px;
 		height: 28px;
 		background: var(--bg-sidebar);
-		border: 3px solid var(--border-color);
+		border: 2px solid var(--border-color);
 		border-radius: 50%;
 		position: absolute;
-		top: 2px;
-		left: 2px;
+		top: 3px;
+		left: 3px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -85,7 +85,7 @@
 
 	/* Dark mode overrides (knob slides to right, icon swaps) */
 	:global([data-theme="dark"]) .toggle-knob {
-		transform: translateX(34px);
+		transform: translateX(32px);
 		background-color: #121316;
 	}
 	:global([data-theme="dark"]) .sun-icon {
@@ -99,7 +99,7 @@
 	/* Also match system dark setting dynamically if no manual theme class exists */
 	@media (prefers-color-scheme: dark) {
 		:global(:root:not([data-theme="light"])) .toggle-knob {
-			transform: translateX(34px);
+			transform: translateX(32px);
 			background-color: #121316;
 		}
 		:global(:root:not([data-theme="light"])) .sun-icon {
