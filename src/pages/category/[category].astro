@@ -162,15 +162,17 @@ const posts = allPosts
 	/* Grid layout for posts */
 	.posts-grid {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: 1fr;
 		gap: 2rem;
 	}
 
 	/* Standard Card styling */
 	.standard-card {
 		display: flex;
-		flex-direction: column;
-		padding: 1.5rem;
+		flex-direction: row;
+		align-items: center;
+		gap: 2rem;
+		padding: 2rem;
 		position: relative;
 	}
 
@@ -206,11 +208,13 @@ const posts = allPosts
 
 	.card-image-wrapper {
 		width: 100%;
+		max-width: 360px;
 		border-radius: 12px;
 		overflow: hidden;
 		border: 2px solid var(--border-color);
-		margin-bottom: 1.2rem;
+		margin-bottom: 0;
 		aspect-ratio: 16 / 9;
+		flex-shrink: 0;
 	}
 
 	.card-image {
@@ -284,6 +288,17 @@ const posts = allPosts
 		.posts-grid {
 			grid-template-columns: 1fr;
 			gap: 1.5rem;
+		}
+
+		.standard-card {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 1.2rem;
+			padding: 1.5rem;
+		}
+
+		.card-image-wrapper {
+			max-width: 100%;
 		}
 
 		.category-title {
