@@ -38,7 +38,10 @@ const posts = allPosts
 	activeCategory={category}
 >
 	<div class="category-header">
-		<span class="category-badge">{quad.subtitle}</span>
+		<div class="category-meta">
+			<span class="category-badge">{quad.subtitle}</span>
+			<span class="post-count-badge">{posts.length} POSTS</span>
+		</div>
 		<h1 class="category-title">{quad.title}</h1>
 		<p class="category-desc">{quad.description}</p>
 	</div>
@@ -49,8 +52,6 @@ const posts = allPosts
 		</div>
 	) : (
 		<div class="posts-section">
-			<h2 class="section-title">文章合集</h2>
-			
 			<div class="posts-grid">
 				{posts.map((post, idx) => {
 					const isLatest = idx === 0;
@@ -102,6 +103,13 @@ const posts = allPosts
 		border-bottom: 2px dashed var(--border-color);
 	}
 
+	.category-meta {
+		display: flex;
+		align-items: center;
+		gap: 0.8rem;
+		margin-bottom: 0.8rem;
+	}
+
 	.category-badge {
 		display: inline-block;
 		padding: 0.3rem 0.8rem;
@@ -113,8 +121,19 @@ const posts = allPosts
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 1px;
-		margin-bottom: 0.8rem;
 		transition: background-color 0.3s ease;
+	}
+
+	.post-count-badge {
+		display: inline-block;
+		padding: 0.3rem 0.8rem;
+		background-color: var(--bg-sidebar);
+		color: var(--text-muted);
+		border: 2px dashed var(--border-color);
+		border-radius: 10px;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		font-weight: 700;
 	}
 
 	.category-title {
@@ -139,24 +158,6 @@ const posts = allPosts
 		font-size: 1.2rem;
 		font-weight: 700;
 		color: var(--text-muted);
-	}
-
-	/* Section Title */
-	.section-title {
-		font-size: 1.6rem;
-		font-weight: 700;
-		margin-bottom: 1.5rem;
-		color: var(--text-main);
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-	.section-title::after {
-		content: '';
-		flex: 1;
-		height: 2px;
-		background-color: var(--border-color);
-		border-radius: 2px;
 	}
 
 	/* Grid layout for posts */
