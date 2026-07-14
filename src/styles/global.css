@@ -26,19 +26,19 @@
 }
 
 :root[data-theme="dark"] {
-	/* Color Tokens - Dark Mode */
-	--bg-home: #121316;       /* Deep dark workbench background */
-	--bg-canvas: #1C1E22;     /* Canvas container */
-	--bg-sidebar: #222329;    /* Dark sidebar */
-	--bg-page: #16171B;       /* Dark category page */
-	--bg-card: #202227;       /* Dark card background */
+	/* Color Tokens - Dark Mode (Option 1: Retro Gameboy Dark) */
+	--bg-home: #1F2421;       /* Warm dark olive gray workbench background */
+	--bg-canvas: #2A302C;     /* Forest gray canvas container */
+	--bg-sidebar: #2E3631;    /* Muted moss green/gray sidebar */
+	--bg-page: #1F2421;       /* Dark category page */
+	--bg-card: #2A302C;       /* Dark card background */
 	
-	--text-main: #ECF0F3;     /* Light text */
-	--text-muted: #959EA8;    /* Muted text */
-	--border-color: #5C6374;  /* Muted slate-gray border */
-	--shadow-flat: #2C2F38;   /* Soft dark slate shadow */
-	--shadow-color: rgba(0, 0, 0, 0.4);
-	--dot-color: rgba(236, 240, 243, 0.06);
+	--text-main: #E8EFE9;     /* Soft sage off-white text */
+	--text-muted: #9AA89E;    /* Muted sage text */
+	--border-color: #6E7D73;  /* Retro sage green/gray border */
+	--shadow-flat: #141715;   /* Deep forest moss shadow */
+	--shadow-color: rgba(20, 23, 21, 0.4);
+	--dot-color: rgba(110, 125, 115, 0.08);
 
 	--accent: #4C9F9B;
 	--accent-dark: #6BD9D4;
@@ -47,18 +47,18 @@
 /* Auto match system dark theme if no manual choice is selected */
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme="light"]) {
-		--bg-home: #121316;
-		--bg-canvas: #1C1E22;
-		--bg-sidebar: #222329;
-		--bg-page: #16171B;
-		--bg-card: #202227;
+		--bg-home: #1F2421;
+		--bg-canvas: #2A302C;
+		--bg-sidebar: #2E3631;
+		--bg-page: #1F2421;
+		--bg-card: #2A302C;
 		
-		--text-main: #ECF0F3;
-		--text-muted: #959EA8;
-		--border-color: #5C6374;
-		--shadow-flat: #2C2F38;
-		--shadow-color: rgba(0, 0, 0, 0.4);
-		--dot-color: rgba(236, 240, 243, 0.06);
+		--text-main: #E8EFE9;
+		--text-muted: #9AA89E;
+		--border-color: #6E7D73;
+		--shadow-flat: #141715;
+		--shadow-color: rgba(20, 23, 21, 0.4);
+		--dot-color: rgba(110, 125, 115, 0.08);
 
 		--accent: #4C9F9B;
 		--accent-dark: #6BD9D4;
