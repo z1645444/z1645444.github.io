@@ -69,6 +69,13 @@ const { title, description, image = FallbackImage } = Astro.props;
 		}
 	})();
 
+	// Blur focused element before swap to release stuck active/focus states
+	document.addEventListener('astro:before-swap', () => {
+		if (document.activeElement && typeof document.activeElement.blur === 'function') {
+			document.activeElement.blur();
+		}
+	});
+
 	// Sync theme after View Transitions swap
 	document.addEventListener('astro:after-swap', () => {
 		const storedTheme = localStorage.getItem('theme');

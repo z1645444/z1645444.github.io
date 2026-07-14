@@ -198,3 +198,10 @@ hr {
 	clip: rect(0, 0, 0, 0);
 	border: 0;
 }
+
+/* Prevent hover/pointer events during View Transitions to prevent stuck hover states */
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+	pointer-events: none;
+}
