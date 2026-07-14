@@ -109,11 +109,6 @@ body {
 	box-shadow: 6px 6px 0px var(--shadow-flat);
 }
 
-.toy-card-interactive:active {
-	transform: translate(2px, 2px);
-	box-shadow: 2px 2px 0px var(--shadow-flat);
-}
-
 /* Responsive grid layout */
 main {
 	width: 100%;
