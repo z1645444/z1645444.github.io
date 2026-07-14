@@ -164,6 +164,7 @@ pre {
 	background-color: var(--bg-page);
 	border: 2px solid var(--border-color);
 	border-radius: 16px;
+	box-shadow: 3px 3px 0px var(--shadow-flat);
 	overflow-x: auto;
 }
 

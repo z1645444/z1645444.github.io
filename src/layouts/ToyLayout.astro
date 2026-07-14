@@ -47,6 +47,8 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				flex-direction: column;
 				min-height: 100vh;
 				background-color: var(--bg-page);
+				background-image: radial-gradient(var(--dot-color) 2.5px, transparent 2.5px);
+				background-size: 28px 28px;
 				transition: background-color 0.2s ease-in-out;
 			}
 
@@ -83,10 +85,11 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				color: var(--text-main);
 				text-decoration: none;
 				display: inline-block;
-				transition: transform 0.2s ease;
+				transition: color 0.15s ease-in-out;
 			}
+
 			.logo:hover {
-				transform: rotate(-2deg) scale(1.03);
+				color: var(--accent);
 			}
 
 			.logo-dot {
