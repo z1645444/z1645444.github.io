@@ -118,13 +118,25 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 			}
 
 			.nav-item-link:hover {
-				background-color: rgba(0,0,0,0.03);
+				background-color: var(--hover-color-light);
+				color: #FFFFFF;
 				border-color: var(--border-color);
 				transform: translate(-2px, -2px);
 				box-shadow: 3px 3px 0 var(--shadow-flat);
 			}
 			:global([data-theme="dark"]) .nav-item-link:hover {
-				background-color: rgba(255,255,255,0.03);
+				background-color: var(--hover-color-dark);
+				color: #FFFFFF;
+			}
+			@media (prefers-color-scheme: dark) {
+				:global(:root:not([data-theme="light"])) .nav-item-link:hover {
+					background-color: var(--hover-color-dark);
+					color: #FFFFFF;
+				}
+			}
+			.nav-item-link:hover .icon-wrapper {
+				background-color: rgba(255, 255, 255, 0.2);
+				border-color: #FFFFFF;
 			}
 
 			.nav-item-link:active {
@@ -270,6 +282,7 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 								<a 
 									href={quad.url} 
 									class={`nav-item-link ${activeCategory === quad.id ? 'active' : ''}`}
+									style={`--hover-color-light: ${quad.colorLight}; --hover-color-dark: ${quad.colorDark};`}
 								>
 									<span class="icon-wrapper">
 										<QuadrantIcon name={quad.icon} size={20} />
