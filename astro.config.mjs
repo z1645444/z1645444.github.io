@@ -3,6 +3,8 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
+import gruvboxLight from 'shiki/themes/gruvbox-light-soft.mjs';
+import gruvboxDark from 'shiki/themes/gruvbox-dark-soft.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,8 +13,8 @@ export default defineConfig({
 	markdown: {
 		shikiConfig: {
 			themes: {
-				light: 'solarized-light',
-				dark: 'solarized-dark',
+				light: gruvboxLight,
+				dark: gruvboxDark,
 			},
 			wrap: true,
 		},

@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import ToyLayout from './ToyLayout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import { QUADRANTS_CONFIG } from '../consts';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	category?: string;
@@ -12,6 +13,8 @@ const { title, description, pubDate, updatedDate, heroImage, category } = Astro.
 
 // Determine active category. If title matches 'About Me', default to 'about'
 const activeCategory = category || (title.toLowerCase().includes('about') ? 'about' : '');
+
+const quad = QUADRANTS_CONFIG.quadrants.find((q) => q.id === activeCategory);
 ---
 
 <ToyLayout title={title} description={description} activeCategory={activeCategory}>
@@ -23,6 +26,11 @@ const activeCategory = category || (title.toLowerCase().includes('about') ? 'abo
 		)}
 		
 		<div class="article-meta">
+			{quad && (
+				<div class="article-category">
+					<span class="category-badge">{quad.subtitle}</span>
+				</div>
+			)}
 			<div class="article-date">
 				<FormattedDate date={pubDate} />
 				{updatedDate && (
@@ -64,6 +72,23 @@ const activeCategory = category || (title.toLowerCase().includes('about') ? 'abo
 		display: block;
 		border: none;
 		border-radius: 0;
+	}
+
+	.article-category {
+		margin-bottom: 0.2rem;
+	}
+
+	.category-badge {
+		display: inline-block;
+		padding: 0.25rem 0.75rem;
+		background-color: var(--accent);
+		color: #FFFFFF;
+		border: 2px solid var(--border-color);
+		border-radius: 10px;
+		font-size: 0.75rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 1px;
 	}
 
 	.article-meta {
