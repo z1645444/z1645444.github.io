@@ -6,9 +6,15 @@ import { defineConfig, fontProviders } from 'astro/config';
 import gruvboxLight from 'shiki/themes/gruvbox-light-soft.mjs';
 import gruvboxDark from 'shiki/themes/gruvbox-dark-soft.mjs';
 
+const [githubOwner, githubRepository] = (process.env.GITHUB_REPOSITORY ?? '').split('/');
+const isGitHubUserSite = githubRepository === `${githubOwner}.github.io`;
+const inferredSite = githubOwner ? `https://${githubOwner}.github.io` : 'https://example.com';
+const inferredBase = githubRepository && !isGitHubUserSite ? `/${githubRepository}` : '/';
+
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://example.com',
+	site: process.env.SITE_URL || inferredSite,
+	base: process.env.BASE_PATH || inferredBase,
 	integrations: [mdx(), sitemap()],
 	markdown: {
 		shikiConfig: {

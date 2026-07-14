@@ -2,12 +2,18 @@
 import BaseHead from '../components/BaseHead.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import QuadrantIcon from '../components/QuadrantIcon.astro';
-import { SITE_TITLE, SITE_DESCRIPTION, QUADRANTS_CONFIG } from '../consts';
+import {
+	SITE_TITLE,
+	SITE_DESCRIPTION,
+	QUADRANTS_CONFIG,
+	type QuadrantId,
+	withBase,
+} from '../consts';
 
 interface Props {
 	title?: string;
 	description?: string;
-	activeCategory?: string; // id of active quadrant: 'build' | 'explore' | 'observe' | 'about'
+	activeCategory?: QuadrantId;
 }
 
 const { 
@@ -127,105 +133,33 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				box-shadow: 3px 3px 0 var(--shadow-flat);
 			}
 
-			/* Category-specific Hover Colors (Static CSS to prevent View Transition morphing bugs) */
-			
-			/* Build (Teal) */
-			.nav-item-link[data-category="build"]:hover {
-				background-color: color-mix(in srgb, #689d6a 12%, transparent);
-				color: #689d6a;
-			}
-			.nav-item-link[data-category="build"]:hover .icon-wrapper {
-				border-color: #689d6a;
-			}
-			:global([data-theme="dark"]) .nav-item-link[data-category="build"]:hover {
-				background-color: color-mix(in srgb, #8ec07c 18%, transparent);
-				color: #8ec07c;
-			}
-			:global([data-theme="dark"]) .nav-item-link[data-category="build"]:hover .icon-wrapper {
-				border-color: #8ec07c;
-			}
-			@media (prefers-color-scheme: dark) {
-				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="build"]:hover {
-					background-color: color-mix(in srgb, #8ec07c 18%, transparent);
-					color: #8ec07c;
-				}
-				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="build"]:hover .icon-wrapper {
-					border-color: #8ec07c;
-				}
+			/* Navigation colors come from QUADRANTS_CONFIG through CSS variables. */
+			.nav-item-link:hover {
+				background-color: color-mix(in srgb, var(--nav-color-light) 12%, transparent);
+				color: var(--nav-color-light);
 			}
 
-			/* Explore (Olive Green) */
-			.nav-item-link[data-category="explore"]:hover {
-				background-color: color-mix(in srgb, #98971a 12%, transparent);
-				color: #98971a;
-			}
-			.nav-item-link[data-category="explore"]:hover .icon-wrapper {
-				border-color: #98971a;
-			}
-			:global([data-theme="dark"]) .nav-item-link[data-category="explore"]:hover {
-				background-color: color-mix(in srgb, #b8bb26 18%, transparent);
-				color: #b8bb26;
-			}
-			:global([data-theme="dark"]) .nav-item-link[data-category="explore"]:hover .icon-wrapper {
-				border-color: #b8bb26;
-			}
-			@media (prefers-color-scheme: dark) {
-				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="explore"]:hover {
-					background-color: color-mix(in srgb, #b8bb26 18%, transparent);
-					color: #b8bb26;
-				}
-				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="explore"]:hover .icon-wrapper {
-					border-color: #b8bb26;
-				}
+			.nav-item-link:hover .icon-wrapper {
+				border-color: var(--nav-color-light);
 			}
 
-			/* Observe (Rose Pink) */
-			.nav-item-link[data-category="observe"]:hover {
-				background-color: color-mix(in srgb, #b16286 12%, transparent);
-				color: #b16286;
-			}
-			.nav-item-link[data-category="observe"]:hover .icon-wrapper {
-				border-color: #b16286;
-			}
-			:global([data-theme="dark"]) .nav-item-link[data-category="observe"]:hover {
-				background-color: color-mix(in srgb, #d3869b 18%, transparent);
-				color: #d3869b;
-			}
-			:global([data-theme="dark"]) .nav-item-link[data-category="observe"]:hover .icon-wrapper {
-				border-color: #d3869b;
-			}
-			@media (prefers-color-scheme: dark) {
-				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="observe"]:hover {
-					background-color: color-mix(in srgb, #d3869b 18%, transparent);
-					color: #d3869b;
-				}
-				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="observe"]:hover .icon-wrapper {
-					border-color: #d3869b;
-				}
+			:global([data-theme="dark"]) .nav-item-link:hover {
+				background-color: color-mix(in srgb, var(--nav-color-dark) 18%, transparent);
+				color: var(--nav-color-dark);
 			}
 
-			/* About (Orange) */
-			.nav-item-link[data-category="about"]:hover {
-				background-color: color-mix(in srgb, #d65d0e 12%, transparent);
-				color: #d65d0e;
+			:global([data-theme="dark"]) .nav-item-link:hover .icon-wrapper {
+				border-color: var(--nav-color-dark);
 			}
-			.nav-item-link[data-category="about"]:hover .icon-wrapper {
-				border-color: #d65d0e;
-			}
-			:global([data-theme="dark"]) .nav-item-link[data-category="about"]:hover {
-				background-color: color-mix(in srgb, #fe8019 18%, transparent);
-				color: #fe8019;
-			}
-			:global([data-theme="dark"]) .nav-item-link[data-category="about"]:hover .icon-wrapper {
-				border-color: #fe8019;
-			}
+
 			@media (prefers-color-scheme: dark) {
-				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="about"]:hover {
-					background-color: color-mix(in srgb, #fe8019 18%, transparent);
-					color: #fe8019;
+				:global(:root:not([data-theme="light"])) .nav-item-link:hover {
+					background-color: color-mix(in srgb, var(--nav-color-dark) 18%, transparent);
+					color: var(--nav-color-dark);
 				}
-				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="about"]:hover .icon-wrapper {
-					border-color: #fe8019;
+
+				:global(:root:not([data-theme="light"])) .nav-item-link:hover .icon-wrapper {
+					border-color: var(--nav-color-dark);
 				}
 			}
 
@@ -391,16 +325,17 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 			<!-- Sidebar -->
 			<aside class="sidebar">
 				<div class="sidebar-top">
-					<a href="/" class="logo">
+					<a href={withBase()} class="logo">
 						{SITE_TITLE}<span class="logo-dot">.</span>
 					</a>
 					<ul class="nav-list">
 						{QUADRANTS_CONFIG.quadrants.map((quad) => (
 							<li>
 								<a 
-									href={quad.url} 
+									href={withBase(quad.path)}
 									class={`nav-item-link ${activeCategory === quad.id ? 'active' : ''}`}
 									data-category={quad.id}
+									style={`--nav-color-light: ${quad.colorLight}; --nav-color-dark: ${quad.colorDark};`}
 								>
 									<span class="icon-wrapper">
 										<QuadrantIcon name={quad.icon} size={20} />

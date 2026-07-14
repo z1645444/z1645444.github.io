@@ -1,23 +1,27 @@
 ---
 import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
 import ToyLayout from './ToyLayout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import { QUADRANTS_CONFIG } from '../consts';
+import { QUADRANTS_CONFIG, type QuadrantId } from '../consts';
 
-type Props = CollectionEntry<'blog'>['data'] & {
-	category?: string;
-};
+interface Props {
+	title: string;
+	description: string;
+	pubDate?: Date;
+	updatedDate?: Date;
+	heroImage?: ImageMetadata;
+	category?: QuadrantId;
+	activeCategory?: QuadrantId;
+}
 
-const { title, description, pubDate, updatedDate, heroImage, category } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, category, activeCategory } = Astro.props;
+const resolvedActiveCategory = activeCategory ?? category;
 
-// Determine active category. If title matches 'About Me', default to 'about'
-const activeCategory = category || (title.toLowerCase().includes('about') ? 'about' : '');
-
-const quad = QUADRANTS_CONFIG.quadrants.find((q) => q.id === activeCategory);
+const quad = QUADRANTS_CONFIG.quadrants.find((q) => q.id === resolvedActiveCategory);
 ---
 
-<ToyLayout title={title} description={description} activeCategory={activeCategory}>
+<ToyLayout title={title} description={description} activeCategory={resolvedActiveCategory}>
 	<article class="post-article">
 		{heroImage && (
 			<div class="article-hero-wrapper">
@@ -31,14 +35,16 @@ const quad = QUADRANTS_CONFIG.quadrants.find((q) => q.id === activeCategory);
 					<span class="category-badge">{quad.subtitle}</span>
 				</div>
 			)}
-			<div class="article-date">
-				<FormattedDate date={pubDate} />
-				{updatedDate && (
-					<span class="last-updated">
-						（已于 <FormattedDate date={updatedDate} /> 更新）
-					</span>
-				)}
-			</div>
+			{pubDate && (
+				<div class="article-date">
+					<FormattedDate date={pubDate} />
+					{updatedDate && (
+						<span class="last-updated">
+							（已于 <FormattedDate date={updatedDate} /> 更新）
+						</span>
+					)}
+				</div>
+			)}
 			<h1 class="article-title">{title}</h1>
 			<p class="article-desc">{description}</p>
 			<hr class="article-divider" />

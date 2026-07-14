@@ -1,8 +1,9 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { BLOG_CATEGORY_IDS } from './consts';
 
-const dateMatches = (pubDateInput: any, pathDateStr: string): boolean => {
+const dateMatches = (pubDateInput: unknown, pathDateStr: string): boolean => {
 	if (!pubDateInput) return false;
 
 	if (pubDateInput instanceof Date) {
@@ -20,7 +21,7 @@ const dateMatches = (pubDateInput: any, pathDateStr: string): boolean => {
 	}
 
 	const d = new Date(str);
-	if (isNaN(d.getTime())) return false;
+	if (Number.isNaN(d.getTime())) return false;
 
 	// JS parses non-ISO date strings in local time, so we use local components
 	const year = d.getFullYear();
@@ -68,9 +69,8 @@ const blog = defineCollection({
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),
 			heroImage: z.optional(image()),
-			category: z.string(),
+			category: z.enum(BLOG_CATEGORY_IDS),
 		}),
 });
 
 export const collections = { blog };
-

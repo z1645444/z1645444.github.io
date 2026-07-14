@@ -2,7 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import QuadrantIcon from '../components/QuadrantIcon.astro';
-import { SITE_TITLE, SITE_DESCRIPTION, QUADRANTS_CONFIG } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION, QUADRANTS_CONFIG, withBase } from '../consts';
 
 const N = QUADRANTS_CONFIG.quadrants.length;
 const isOdd = N % 2 !== 0;
@@ -284,7 +284,7 @@ const fullWidthIndex = isOdd
 						const isFullWidth = idx === fullWidthIndex;
 						return (
 							<a 
-								href={quad.url} 
+								href={withBase(quad.path)}
 								class={`quadrant-card ${isFullWidth ? 'full-width' : ''}`}
 								style={`--quad-color-light: ${quad.colorLight}; --quad-color-dark: ${quad.colorDark};`}
 							>

@@ -1,12 +1,15 @@
 ---
+import { withBase } from '../../consts';
+
+const homeUrl = withBase();
 ---
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8" />
-	<meta http-equiv="refresh" content="0;url=/" />
-	<script is:inline>
-		window.location.href = '/';
+	<meta http-equiv="refresh" content={`0;url=${homeUrl}`} />
+	<script is:inline define:vars={{ homeUrl }}>
+		window.location.replace(homeUrl);
 	</script>
 </head>
 <body>

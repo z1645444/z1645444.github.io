@@ -3,12 +3,12 @@ import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import ToyLayout from '../../layouts/ToyLayout.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
-import { SITE_TITLE, QUADRANTS_CONFIG } from '../../consts';
+import { SITE_TITLE, QUADRANTS_CONFIG, withBase } from '../../consts';
 
 export async function getStaticPaths() {
 	// Generate paths for quadrants that point to category URLs
 	const categories = QUADRANTS_CONFIG.quadrants
-		.filter((q) => q.url.startsWith('/category/'))
+		.filter((q) => q.path.startsWith('category/'))
 		.map((q) => q.id);
 
 	return categories.map((cat) => ({
@@ -57,7 +57,7 @@ const posts = allPosts
 					const isLatest = idx === 0;
 					return (
 						<a 
-							href={`/blog/${post.id}/`} 
+							href={withBase(`blog/${post.id}/`)}
 							class={`toy-card toy-card-interactive standard-card ${isLatest ? 'latest-card' : ''}`}
 						>
 							{isLatest && (
@@ -94,8 +94,6 @@ const posts = allPosts
 </ToyLayout>
 
 <style>
-	/* Header styles */
-
 	/* Header styles */
 	.category-header {
 		margin-bottom: 3rem;

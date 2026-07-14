@@ -4,19 +4,23 @@
 export const SITE_TITLE = 'Chromatic';
 export const SITE_DESCRIPTION = 'A playful, tactile Toy-Box blog built with Astro.';
 
+export const QUADRANT_ICON_NAMES = ['wrench', 'compass', 'eye', 'info'] as const;
+
+export type QuadrantIconName = (typeof QUADRANT_ICON_NAMES)[number];
+
 export interface Quadrant {
 	id: string;
 	title: string;
 	subtitle: string;
-	icon: string;
+	icon: QuadrantIconName;
 	colorLight: string;
 	colorDark: string;
-	url: string;
+	path: string;
 	description: string;
 }
 
 export const QUADRANTS_CONFIG = {
-	oddLayout: 'top-heavy' as 'top-heavy' | 'bottom-heavy',
+	oddLayout: 'top-heavy',
 	quadrants: [
 		{
 			id: 'build',
@@ -25,7 +29,7 @@ export const QUADRANTS_CONFIG = {
 			icon: 'wrench',
 			colorLight: '#689d6a',
 			colorDark: '#8ec07c',
-			url: '/category/build',
+			path: 'category/build/',
 			description: '构建模块化界面与实物般的数字体验，探索最新的组件拼装工艺。',
 		},
 		{
@@ -35,7 +39,7 @@ export const QUADRANTS_CONFIG = {
 			icon: 'compass',
 			colorLight: '#98971a',
 			colorDark: '#b8bb26',
-			url: '/category/explore',
+			path: 'category/explore/',
 			description: '探索未知的边界，发掘有趣的新奇工具、技术与创意设计。',
 		},
 		{
@@ -45,7 +49,7 @@ export const QUADRANTS_CONFIG = {
 			icon: 'eye',
 			colorLight: '#b16286',
 			colorDark: '#d3869b',
-			url: '/category/observe',
+			path: 'category/observe/',
 			description: '静心观察周围的世界，记录那些闪光的灵感碎片与生活设计思考。',
 		},
 		{
@@ -55,8 +59,25 @@ export const QUADRANTS_CONFIG = {
 			icon: 'info',
 			colorLight: '#d65d0e',
 			colorDark: '#fe8019',
-			url: '/about',
+			path: 'about/',
 			description: '关于我们、设计主旨以及如何拼装起这套玩具盒界面系统的幕后故事。',
 		},
-	] as Quadrant[],
+	],
+} as const satisfies {
+	oddLayout: 'top-heavy' | 'bottom-heavy';
+	quadrants: readonly Quadrant[];
+};
+
+export type QuadrantId = (typeof QUADRANTS_CONFIG.quadrants)[number]['id'];
+
+export const BLOG_CATEGORY_IDS = QUADRANTS_CONFIG.quadrants
+	.filter((quadrant) => quadrant.path.startsWith('category/'))
+	.map((quadrant) => quadrant.id) as [QuadrantId, ...QuadrantId[]];
+
+export const withBase = (path = ''): string => {
+	const baseUrl = import.meta.env.BASE_URL.endsWith('/')
+		? import.meta.env.BASE_URL
+		: `${import.meta.env.BASE_URL}/`;
+	const normalizedPath = path.replace(/^\/+/, '');
+	return `${baseUrl}${normalizedPath}`;
 };
