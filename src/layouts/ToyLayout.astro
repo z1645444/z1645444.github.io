@@ -117,31 +117,112 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 			}
 
-			/* Hover State - Inactive Link (Soft Translucent Tint) */
+			/* Inactive Link Default Hover Base (Raises up) */
 			.nav-item-link:hover {
-				background-color: color-mix(in srgb, var(--hover-color-light) 12%, transparent);
-				color: var(--hover-color-light);
 				border-color: var(--border-color);
 				transform: translate(-2px, -2px);
 				box-shadow: 3px 3px 0 var(--shadow-flat);
 			}
-			.nav-item-link:hover .icon-wrapper {
-				border-color: var(--hover-color-light);
+
+			/* Category-specific Hover Colors (Static CSS to prevent View Transition morphing bugs) */
+			
+			/* Build (Teal) */
+			.nav-item-link[data-category="build"]:hover {
+				background-color: color-mix(in srgb, #3A828A 12%, transparent);
+				color: #3A828A;
 			}
-			:global([data-theme="dark"]) .nav-item-link:hover {
-				background-color: color-mix(in srgb, var(--hover-color-dark) 18%, transparent);
-				color: var(--hover-color-dark);
+			.nav-item-link[data-category="build"]:hover .icon-wrapper {
+				border-color: #3A828A;
 			}
-			:global([data-theme="dark"]) .nav-item-link:hover .icon-wrapper {
-				border-color: var(--hover-color-dark);
+			:global([data-theme="dark"]) .nav-item-link[data-category="build"]:hover {
+				background-color: color-mix(in srgb, #4C9F9B 18%, transparent);
+				color: #4C9F9B;
+			}
+			:global([data-theme="dark"]) .nav-item-link[data-category="build"]:hover .icon-wrapper {
+				border-color: #4C9F9B;
 			}
 			@media (prefers-color-scheme: dark) {
-				:global(:root:not([data-theme="light"])) .nav-item-link:hover {
-					background-color: color-mix(in srgb, var(--hover-color-dark) 18%, transparent);
-					color: var(--hover-color-dark);
+				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="build"]:hover {
+					background-color: color-mix(in srgb, #4C9F9B 18%, transparent);
+					color: #4C9F9B;
 				}
-				:global(:root:not([data-theme="light"])) .nav-item-link:hover .icon-wrapper {
-					border-color: var(--hover-color-dark);
+				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="build"]:hover .icon-wrapper {
+					border-color: #4C9F9B;
+				}
+			}
+
+			/* Explore (Olive Green) */
+			.nav-item-link[data-category="explore"]:hover {
+				background-color: color-mix(in srgb, #8B9E31 12%, transparent);
+				color: #8B9E31;
+			}
+			.nav-item-link[data-category="explore"]:hover .icon-wrapper {
+				border-color: #8B9E31;
+			}
+			:global([data-theme="dark"]) .nav-item-link[data-category="explore"]:hover {
+				background-color: color-mix(in srgb, #9CAF3F 18%, transparent);
+				color: #9CAF3F;
+			}
+			:global([data-theme="dark"]) .nav-item-link[data-category="explore"]:hover .icon-wrapper {
+				border-color: #9CAF3F;
+			}
+			@media (prefers-color-scheme: dark) {
+				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="explore"]:hover {
+					background-color: color-mix(in srgb, #9CAF3F 18%, transparent);
+					color: #9CAF3F;
+				}
+				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="explore"]:hover .icon-wrapper {
+					border-color: #9CAF3F;
+				}
+			}
+
+			/* Observe (Rose Pink) */
+			.nav-item-link[data-category="observe"]:hover {
+				background-color: color-mix(in srgb, #B55D82 12%, transparent);
+				color: #B55D82;
+			}
+			.nav-item-link[data-category="observe"]:hover .icon-wrapper {
+				border-color: #B55D82;
+			}
+			:global([data-theme="dark"]) .nav-item-link[data-category="observe"]:hover {
+				background-color: color-mix(in srgb, #C27392 18%, transparent);
+				color: #C27392;
+			}
+			:global([data-theme="dark"]) .nav-item-link[data-category="observe"]:hover .icon-wrapper {
+				border-color: #C27392;
+			}
+			@media (prefers-color-scheme: dark) {
+				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="observe"]:hover {
+					background-color: color-mix(in srgb, #C27392 18%, transparent);
+					color: #C27392;
+				}
+				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="observe"]:hover .icon-wrapper {
+					border-color: #C27392;
+				}
+			}
+
+			/* About (Orange) */
+			.nav-item-link[data-category="about"]:hover {
+				background-color: color-mix(in srgb, #D65E1E 12%, transparent);
+				color: #D65E1E;
+			}
+			.nav-item-link[data-category="about"]:hover .icon-wrapper {
+				border-color: #D65E1E;
+			}
+			:global([data-theme="dark"]) .nav-item-link[data-category="about"]:hover {
+				background-color: color-mix(in srgb, #E57335 18%, transparent);
+				color: #E57335;
+			}
+			:global([data-theme="dark"]) .nav-item-link[data-category="about"]:hover .icon-wrapper {
+				border-color: #E57335;
+			}
+			@media (prefers-color-scheme: dark) {
+				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="about"]:hover {
+					background-color: color-mix(in srgb, #E57335 18%, transparent);
+					color: #E57335;
+				}
+				:global(:root:not([data-theme="light"])) .nav-item-link[data-category="about"]:hover .icon-wrapper {
+					border-color: #E57335;
 				}
 			}
 
@@ -164,13 +245,22 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				border-color: #FFFFFF;
 			}
 
-			/* Active Link Hover State (Lifts up on hover) */
+			/* Active Link Hover State (Raises up, using filter to adjust brightness dynamically) */
 			.nav-item-link.active:hover {
-				background-color: var(--accent-dark);
+				background-color: var(--accent);
+				filter: brightness(0.92);
 				color: #FFFFFF;
 				border-color: var(--border-color);
 				transform: translate(-2px, -2px);
 				box-shadow: 3px 3px 0 var(--shadow-flat);
+			}
+			:global([data-theme="dark"]) .nav-item-link.active:hover {
+				filter: brightness(1.1);
+			}
+			@media (prefers-color-scheme: dark) {
+				:global(:root:not([data-theme="light"])) .nav-item-link.active:hover {
+					filter: brightness(1.1);
+				}
 			}
 			.nav-item-link.active:hover .icon-wrapper {
 				background-color: rgba(255,255,255,0.25);
@@ -302,7 +392,7 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 								<a 
 									href={quad.url} 
 									class={`nav-item-link ${activeCategory === quad.id ? 'active' : ''}`}
-									style={`--hover-color-light: ${quad.colorLight}; --hover-color-dark: ${quad.colorDark};`}
+									data-category={quad.id}
 								>
 									<span class="icon-wrapper">
 										<QuadrantIcon name={quad.icon} size={20} />
