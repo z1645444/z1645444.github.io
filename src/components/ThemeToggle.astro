@@ -206,8 +206,13 @@
 		}
 	});
 
-	// Release focus before a view transition swaps the current page markup.
-	document.addEventListener('astro:before-swap', () => {
+	// Preserve the active theme while the client router swaps in the next page.
+	document.addEventListener('astro:before-swap', (event) => {
+		event.newDocument.documentElement.setAttribute(
+			'data-theme',
+			getActiveTheme()
+		);
+
 		if (document.activeElement instanceof HTMLElement)
 			document.activeElement.blur();
 	});
