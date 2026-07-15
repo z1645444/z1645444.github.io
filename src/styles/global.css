@@ -1,58 +1,59 @@
-
 :root {
 	color-scheme: light dark;
 
 	/* Color Tokens - Light Mode (Gruvbox Light Retro) */
-	--bg-home: #f9f5d7;       /* Gruvbox light0_hard */
-	--bg-canvas: #fbf1c7;     /* Gruvbox light0 */
-	--bg-sidebar: #f2e5bc;    /* Gruvbox light0_soft */
-	--bg-page: #f9f5d7;       
-	--bg-card: #fbf1c7;       
-	
-	--text-main: #282828;     /* Gruvbox dark0 */
-	--text-muted: #7c6f64;    /* Gruvbox dark4 */
-	--border-color: #282828;  
-	--shadow-flat: #282828;   
+	--bg-home: #f9f5d7; /* Gruvbox light0_hard */
+	--bg-canvas: #fbf1c7; /* Gruvbox light0 */
+	--bg-sidebar: #f2e5bc; /* Gruvbox light0_soft */
+	--bg-page: #f9f5d7;
+	--bg-card: #fbf1c7;
+
+	--text-main: #282828; /* Gruvbox dark0 */
+	--text-muted: #7c6f64; /* Gruvbox dark4 */
+	--border-color: #282828;
+	--shadow-flat: #282828;
 	--shadow-color: rgba(40, 40, 40, 0.4);
 	--dot-color: rgba(124, 111, 100, 0.12);
 
 	/* Fonts */
 	--font-atkinson: 'Atkinson', sans-serif;
-	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	--font-mono:
+		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+		'Courier New', monospace;
 
 	/* Accent Default */
-	--accent: #689d6a;        /* Gruvbox aqua hard */
-	--accent-dark: #458588;   /* Gruvbox blue hard */
+	--accent: #689d6a; /* Gruvbox aqua hard */
+	--accent-dark: #458588; /* Gruvbox blue hard */
 }
 
-:root[data-theme="dark"] {
+:root[data-theme='dark'] {
 	/* Color Tokens - Dark Mode (Gruvbox Dark Retro) */
-	--bg-home: #1d2021;       /* Gruvbox dark0_hard */
-	--bg-canvas: #282828;     /* Gruvbox dark0 */
-	--bg-sidebar: #3c3836;    /* Gruvbox dark1 */
-	--bg-page: #1d2021;       
-	--bg-card: #282828;       
-	
-	--text-main: #ebdbb2;     /* Gruvbox light1 (warm cream) */
-	--text-muted: #a89984;    /* Gruvbox light4 (warm gray) */
-	--border-color: #7c6f64;  /* Gruvbox dark4 (muted gray-brown) */
-	--shadow-flat: #1d2021;   /* Retro hard shadow (matches base) */
+	--bg-home: #1d2021; /* Gruvbox dark0_hard */
+	--bg-canvas: #282828; /* Gruvbox dark0 */
+	--bg-sidebar: #3c3836; /* Gruvbox dark1 */
+	--bg-page: #1d2021;
+	--bg-card: #282828;
+
+	--text-main: #ebdbb2; /* Gruvbox light1 (warm cream) */
+	--text-muted: #a89984; /* Gruvbox light4 (warm gray) */
+	--border-color: #7c6f64; /* Gruvbox dark4 (muted gray-brown) */
+	--shadow-flat: #1d2021; /* Retro hard shadow (matches base) */
 	--shadow-color: rgba(29, 32, 33, 0.5);
 	--dot-color: rgba(124, 111, 100, 0.08);
 
-	--accent: #8ec07c;        /* Gruvbox aqua */
-	--accent-dark: #689d6a;   /* Gruvbox aqua dark */
+	--accent: #8ec07c; /* Gruvbox aqua */
+	--accent-dark: #689d6a; /* Gruvbox aqua dark */
 }
 
 /* Auto match system dark theme if no manual choice is selected */
 @media (prefers-color-scheme: dark) {
-	:root:not([data-theme="light"]) {
+	:root:not([data-theme='light']) {
 		--bg-home: #1d2021;
 		--bg-canvas: #282828;
 		--bg-sidebar: #3c3836;
 		--bg-page: #1d2021;
 		--bg-card: #282828;
-		
+
 		--text-main: #ebdbb2;
 		--text-muted: #a89984;
 		--border-color: #7c6f64;
@@ -117,17 +118,30 @@ main {
 	padding: 2rem;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
 	font-family: var(--font-atkinson);
 	font-weight: 700;
 	color: var(--text-main);
 	line-height: 1.2;
 }
 
-h1 { font-size: 2.8rem; }
-h2 { font-size: 2.2rem; }
-h3 { font-size: 1.6rem; }
-h4 { font-size: 1.3rem; }
+h1 {
+	font-size: 2.8rem;
+}
+h2 {
+	font-size: 2.2rem;
+}
+h3 {
+	font-size: 1.6rem;
+}
+h4 {
+	font-size: 1.3rem;
+}
 
 a {
 	color: var(--accent);
@@ -230,12 +244,12 @@ hr {
 }
 
 /* Shiki Dual-Theme Code Highlight Override for Class-Based Toggle */
-:root[data-theme="dark"] .astro-code {
+:root[data-theme='dark'] .astro-code {
 	color: var(--shiki-dark) !important;
 	background-color: var(--shiki-dark-bg) !important;
 }
 
-:root[data-theme="dark"] .astro-code span {
+:root[data-theme='dark'] .astro-code span {
 	color: var(--shiki-dark) !important;
 	font-style: var(--shiki-dark-font-style, inherit) !important;
 	font-weight: var(--shiki-dark-font-weight, inherit) !important;

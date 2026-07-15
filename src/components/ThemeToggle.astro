@@ -1,10 +1,31 @@
 ---
+
 ---
-<button id="theme-toggle" class="theme-toggle-btn toy-card-interactive" aria-label="Toggle Theme">
+
+<button
+	id="theme-toggle"
+	type="button"
+	class="theme-toggle-btn toy-card-interactive"
+	aria-label="切换到深色主题"
+	aria-pressed="false"
+>
 	<div class="toggle-track">
 		<div class="toggle-knob">
 			<!-- Sun Icon -->
-			<svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+			<svg
+				class="sun-icon"
+				aria-hidden="true"
+				focusable="false"
+				xmlns="http://www.w3.org/2000/svg"
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="3"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
 				<circle cx="12" cy="12" r="4"></circle>
 				<path d="M12 2v2"></path>
 				<path d="M12 20v2"></path>
@@ -16,7 +37,20 @@
 				<path d="M19.07 4.93l-1.41 1.41"></path>
 			</svg>
 			<!-- Moon Icon -->
-			<svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+			<svg
+				class="moon-icon"
+				aria-hidden="true"
+				focusable="false"
+				xmlns="http://www.w3.org/2000/svg"
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="3"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
 				<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
 			</svg>
 		</div>
@@ -44,6 +78,11 @@
 		box-shadow: 4px 4px 0px var(--shadow-flat);
 	}
 
+	.theme-toggle-btn:focus-visible {
+		outline: 3px solid var(--accent);
+		outline-offset: 4px;
+	}
+
 	.toggle-track {
 		width: 100%;
 		height: 100%;
@@ -66,66 +105,88 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), background-color 0.3s ease;
+		transition:
+			transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+			background-color 0.3s ease;
 	}
 
 	/* Light mode styles */
 	.sun-icon {
 		display: block;
-		color: #E28800; /* Warm orange sun */
+		color: #e28800; /* Warm orange sun */
 	}
 	.moon-icon {
 		display: none;
 	}
 
 	/* Dark mode overrides (knob slides to right, icon swaps) */
-	:global([data-theme="dark"]) .toggle-knob {
+	:global([data-theme='dark']) .toggle-knob {
 		transform: translateX(32px);
 		background-color: #121316;
 	}
-	:global([data-theme="dark"]) .sun-icon {
+	:global([data-theme='dark']) .sun-icon {
 		display: none;
 	}
-	:global([data-theme="dark"]) .moon-icon {
+	:global([data-theme='dark']) .moon-icon {
 		display: block;
-		color: #9CAF3F; /* Greenish/yellowish moon */
+		color: #9caf3f; /* Greenish/yellowish moon */
 	}
 
 	/* Also match system dark setting dynamically if no manual theme class exists */
 	@media (prefers-color-scheme: dark) {
-		:global(:root:not([data-theme="light"])) .toggle-knob {
+		:global(:root:not([data-theme='light'])) .toggle-knob {
 			transform: translateX(32px);
 			background-color: #121316;
 		}
-		:global(:root:not([data-theme="light"])) .sun-icon {
+		:global(:root:not([data-theme='light'])) .sun-icon {
 			display: none;
 		}
-		:global(:root:not([data-theme="light"])) .moon-icon {
+		:global(:root:not([data-theme='light'])) .moon-icon {
 			display: block;
-			color: #9CAF3F;
+			color: #9caf3f;
 		}
 	}
 </style>
 
 <script>
+	type Theme = 'light' | 'dark';
+
+	const themePreference = window.matchMedia('(prefers-color-scheme: dark)');
+
+	const getActiveTheme = (): Theme => {
+		const storedTheme = localStorage.getItem('theme');
+		if (storedTheme === 'light' || storedTheme === 'dark') return storedTheme;
+		return themePreference.matches ? 'dark' : 'light';
+	};
+
+	const syncToggleState = (themeToggle: HTMLButtonElement, theme: Theme) => {
+		const isDark = theme === 'dark';
+		themeToggle.setAttribute('aria-pressed', String(isDark));
+		themeToggle.setAttribute(
+			'aria-label',
+			isDark ? '切换到浅色主题' : '切换到深色主题'
+		);
+	};
+
+	const applyTheme = (theme: Theme, persist = true) => {
+		document.documentElement.setAttribute('data-theme', theme);
+		if (persist) localStorage.setItem('theme', theme);
+
+		const themeToggle = document.getElementById('theme-toggle');
+		if (themeToggle instanceof HTMLButtonElement)
+			syncToggleState(themeToggle, theme);
+	};
+
 	const initThemeToggle = () => {
 		const themeToggle = document.getElementById('theme-toggle');
-		
-		const applyTheme = (theme: string) => {
-			if (theme === 'dark') {
-				document.documentElement.setAttribute('data-theme', 'dark');
-			} else {
-				document.documentElement.setAttribute('data-theme', 'light');
-			}
-			localStorage.setItem('theme', theme);
-		};
+		if (!(themeToggle instanceof HTMLButtonElement)) return;
 
-		if (themeToggle && !themeToggle.dataset.themeToggleInitialized) {
+		syncToggleState(themeToggle, getActiveTheme());
+
+		if (!themeToggle.dataset.themeToggleInitialized) {
 			themeToggle.dataset.themeToggleInitialized = 'true';
 			themeToggle.addEventListener('click', () => {
-				const currentTheme = document.documentElement.getAttribute('data-theme') || 
-					(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-				
+				const currentTheme = getActiveTheme();
 				const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 				applyTheme(newTheme);
 			});
@@ -139,13 +200,15 @@
 	document.addEventListener('astro:page-load', initThemeToggle);
 
 	// Watch for OS preference changes
-	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+	themePreference.addEventListener('change', (event) => {
 		if (!localStorage.getItem('theme')) {
-			if (e.matches) {
-				document.documentElement.setAttribute('data-theme', 'dark');
-			} else {
-				document.documentElement.setAttribute('data-theme', 'light');
-			}
+			applyTheme(event.matches ? 'dark' : 'light', false);
 		}
+	});
+
+	// Release focus before a view transition swaps the current page markup.
+	document.addEventListener('astro:before-swap', () => {
+		if (document.activeElement instanceof HTMLElement)
+			document.activeElement.blur();
 	});
 </script>

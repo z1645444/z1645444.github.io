@@ -2,14 +2,22 @@
 // You can import this data from anywhere in your site by using the `import` keyword.
 
 export const SITE_TITLE = 'Chromatic';
-export const SITE_DESCRIPTION = 'A playful, tactile Toy-Box blog built with Astro.';
+export const SITE_DESCRIPTION =
+	'A playful, tactile Toy-Box blog built with Astro.';
+export const SITE_LOCALE = 'zh-CN';
 
-export const QUADRANT_ICON_NAMES = ['wrench', 'compass', 'eye', 'info'] as const;
+export const QUADRANT_ICON_NAMES = [
+	'wrench',
+	'compass',
+	'eye',
+	'info',
+] as const;
 
 export type QuadrantIconName = (typeof QUADRANT_ICON_NAMES)[number];
 
 export interface Quadrant {
 	id: string;
+	kind: 'category' | 'page';
 	title: string;
 	subtitle: string;
 	icon: QuadrantIconName;
@@ -24,6 +32,7 @@ export const QUADRANTS_CONFIG = {
 	quadrants: [
 		{
 			id: 'build',
+			kind: 'category',
 			title: '建造',
 			subtitle: 'BUILD',
 			icon: 'wrench',
@@ -34,6 +43,7 @@ export const QUADRANTS_CONFIG = {
 		},
 		{
 			id: 'explore',
+			kind: 'category',
 			title: '探索',
 			subtitle: 'EXPLORE',
 			icon: 'compass',
@@ -44,6 +54,7 @@ export const QUADRANTS_CONFIG = {
 		},
 		{
 			id: 'observe',
+			kind: 'category',
 			title: '观察',
 			subtitle: 'OBSERVE',
 			icon: 'eye',
@@ -54,13 +65,15 @@ export const QUADRANTS_CONFIG = {
 		},
 		{
 			id: 'about',
+			kind: 'page',
 			title: '关于',
 			subtitle: 'ABOUT',
 			icon: 'info',
 			colorLight: '#d65d0e',
 			colorDark: '#fe8019',
 			path: 'about/',
-			description: '关于我们、设计主旨以及如何拼装起这套玩具盒界面系统的幕后故事。',
+			description:
+				'关于我们、设计主旨以及如何拼装起这套玩具盒界面系统的幕后故事。',
 		},
 	],
 } as const satisfies {
@@ -69,10 +82,24 @@ export const QUADRANTS_CONFIG = {
 };
 
 export type QuadrantId = (typeof QUADRANTS_CONFIG.quadrants)[number]['id'];
+type QuadrantConfig = (typeof QUADRANTS_CONFIG.quadrants)[number];
+type BlogQuadrant = Extract<QuadrantConfig, { kind: 'category' }>;
+export type BlogCategoryId = BlogQuadrant['id'];
 
-export const BLOG_CATEGORY_IDS = QUADRANTS_CONFIG.quadrants
-	.filter((quadrant) => quadrant.path.startsWith('category/'))
-	.map((quadrant) => quadrant.id) as [QuadrantId, ...QuadrantId[]];
+const blogCategoryIds = QUADRANTS_CONFIG.quadrants
+	.filter((quadrant): quadrant is BlogQuadrant => quadrant.kind === 'category')
+	.map((quadrant) => quadrant.id);
+
+if (blogCategoryIds.length === 0) {
+	throw new Error(
+		'QUADRANTS_CONFIG must contain at least one category quadrant.'
+	);
+}
+
+export const BLOG_CATEGORY_IDS = blogCategoryIds as [
+	BlogCategoryId,
+	...BlogCategoryId[],
+];
 
 export const withBase = (path = ''): string => {
 	const baseUrl = import.meta.env.BASE_URL.endsWith('/')

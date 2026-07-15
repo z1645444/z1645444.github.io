@@ -1,24 +1,23 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
+import { withBase } from '../consts';
 
-type Props = HTMLAttributes<'a'>;
+type LinkTarget =
+	{ path: string; href?: never } | { href: string; path?: never };
+type Props = LinkTarget &
+	Omit<HTMLAttributes<'a'>, 'href'> & {
+		active?: boolean;
+	};
 
-const { href, class: className, ...props } = Astro.props;
-const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
-const subpath = pathname.match(/[^\/]+/g);
-const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
+const { path, href, active = false, class: className, ...props } = Astro.props;
+const resolvedHref = path ? withBase(path) : href;
 ---
 
-<a href={href} class:list={[className, { active: isActive }]} {...props}>
+<a
+	href={resolvedHref}
+	class:list={[className, { active }]}
+	aria-current={active ? 'page' : undefined}
+	{...props}
+>
 	<slot />
 </a>
-<style>
-	a {
-		display: inline-block;
-		text-decoration: none;
-	}
-	a.active {
-		font-weight: bolder;
-		text-decoration: underline;
-	}
-</style>

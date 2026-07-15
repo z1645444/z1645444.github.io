@@ -2,17 +2,25 @@
 import BaseHead from '../components/BaseHead.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import QuadrantIcon from '../components/QuadrantIcon.astro';
-import { SITE_TITLE, SITE_DESCRIPTION, QUADRANTS_CONFIG, withBase } from '../consts';
+import {
+	SITE_TITLE,
+	SITE_DESCRIPTION,
+	SITE_LOCALE,
+	QUADRANTS_CONFIG,
+	withBase,
+} from '../consts';
 
 const N = QUADRANTS_CONFIG.quadrants.length;
 const isOdd = N % 2 !== 0;
 const fullWidthIndex = isOdd
-	? (QUADRANTS_CONFIG.oddLayout === 'top-heavy' ? Math.floor(N / 2) : N - 1)
+	? QUADRANTS_CONFIG.oddLayout === 'top-heavy'
+		? Math.floor(N / 2)
+		: N - 1
 	: -1;
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={SITE_LOCALE}>
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
@@ -37,7 +45,10 @@ const fullWidthIndex = isOdd
 				display: flex;
 				flex-direction: column;
 				gap: 2.5rem;
-				transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+				transition:
+					background-color 0.3s ease,
+					border-color 0.3s ease,
+					box-shadow 0.3s ease;
 			}
 
 			/* Canvas Top Header */
@@ -78,7 +89,7 @@ const fullWidthIndex = isOdd
 			/* Quadrant Cards */
 			.quadrant-card {
 				background-color: var(--quad-color-light);
-				color: #FFFFFF;
+				color: #ffffff;
 				border: 2px solid var(--border-color);
 				border-radius: 28px;
 				box-shadow: 4px 4px 0px var(--shadow-flat);
@@ -90,15 +101,18 @@ const fullWidthIndex = isOdd
 				text-align: center;
 				text-decoration: none;
 				position: relative;
-				transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, background-color 0.3s ease;
+				transition:
+					transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+					box-shadow 0.15s ease,
+					background-color 0.3s ease;
 			}
 
 			/* Apply dark mode quadrant colors */
-			:root[data-theme="dark"] .quadrant-card {
+			:root[data-theme='dark'] .quadrant-card {
 				background-color: var(--quad-color-dark);
 			}
 			@media (prefers-color-scheme: dark) {
-				:root:not([data-theme="light"]) .quadrant-card {
+				:root:not([data-theme='light']) .quadrant-card {
 					background-color: var(--quad-color-dark);
 				}
 			}
@@ -107,7 +121,6 @@ const fullWidthIndex = isOdd
 				transform: translate(-2px, -2px);
 				box-shadow: 6px 6px 0px var(--shadow-flat);
 			}
-
 
 			/* Odd configuration: full-width span */
 			.quadrant-card.full-width {
@@ -132,7 +145,7 @@ const fullWidthIndex = isOdd
 				height: 64px;
 				border-radius: 50%;
 				background-color: rgba(255, 255, 255, 0.2);
-				border: 2px solid #FFFFFF;
+				border: 2px solid #ffffff;
 				display: flex;
 				align-items: center;
 				justify-content: center;
@@ -153,7 +166,7 @@ const fullWidthIndex = isOdd
 			.big-title {
 				font-size: 2.4rem;
 				font-weight: 700;
-				color: #FFFFFF;
+				color: #ffffff;
 			}
 
 			.small-title {
@@ -162,7 +175,7 @@ const fullWidthIndex = isOdd
 				letter-spacing: 2px;
 				text-transform: uppercase;
 				opacity: 0.9;
-				color: #FFFFFF;
+				color: #ffffff;
 			}
 
 			/* Responsive styling */
@@ -272,7 +285,9 @@ const fullWidthIndex = isOdd
 				<!-- Header inside Canvas -->
 				<header class="canvas-header">
 					<div>
-						<h1 class="canvas-title">{SITE_TITLE}<span class="logo-dot">.</span></h1>
+						<h1 class="canvas-title">
+							{SITE_TITLE}<span class="logo-dot">.</span>
+						</h1>
 						<p class="canvas-desc">极简玩具感个人博客系统</p>
 					</div>
 					<ThemeToggle />
@@ -280,24 +295,26 @@ const fullWidthIndex = isOdd
 
 				<!-- Grid of Quadrants -->
 				<div class="quadrant-grid">
-					{QUADRANTS_CONFIG.quadrants.map((quad, idx) => {
-						const isFullWidth = idx === fullWidthIndex;
-						return (
-							<a 
-								href={withBase(quad.path)}
-								class={`quadrant-card ${isFullWidth ? 'full-width' : ''}`}
-								style={`--quad-color-light: ${quad.colorLight}; --quad-color-dark: ${quad.colorDark};`}
-							>
-								<div class="icon-circle">
-									<QuadrantIcon name={quad.icon} size={28} />
-								</div>
-								<div class="card-text">
-									<span class="big-title">{quad.title}</span>
-									<span class="small-title">{quad.subtitle}</span>
-								</div>
-							</a>
-						);
-					})}
+					{
+						QUADRANTS_CONFIG.quadrants.map((quad, idx) => {
+							const isFullWidth = idx === fullWidthIndex;
+							return (
+								<a
+									href={withBase(quad.path)}
+									class={`quadrant-card ${isFullWidth ? 'full-width' : ''}`}
+									style={`--quad-color-light: ${quad.colorLight}; --quad-color-dark: ${quad.colorDark};`}
+								>
+									<div class="icon-circle">
+										<QuadrantIcon name={quad.icon} size={28} />
+									</div>
+									<div class="card-text">
+										<span class="big-title">{quad.title}</span>
+										<span class="small-title">{quad.subtitle}</span>
+									</div>
+								</a>
+							);
+						})
+					}
 				</div>
 			</div>
 		</div>

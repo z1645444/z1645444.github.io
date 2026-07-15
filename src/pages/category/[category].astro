@@ -29,12 +29,11 @@ const allPosts = await getCollection('blog');
 const posts = allPosts
 	.filter((post) => post.data.category === category)
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
 ---
 
-<ToyLayout 
-	title={`${quad.title} - ${SITE_TITLE}`} 
-	description={quad.description} 
+<ToyLayout
+	title={`${quad.title} - ${SITE_TITLE}`}
+	description={quad.description}
 	activeCategory={category}
 >
 	<div class="category-header">
@@ -46,51 +45,55 @@ const posts = allPosts
 		<p class="category-desc">{quad.description}</p>
 	</div>
 
-	{posts.length === 0 ? (
-		<div class="empty-state toy-card">
-			<p>该分类下暂无文章，敬请期待！</p>
-		</div>
-	) : (
-		<div class="posts-section">
-			<div class="posts-grid">
-				{posts.map((post, idx) => {
-					const isLatest = idx === 0;
-					return (
-						<a 
-							href={withBase(`blog/${post.id}/`)}
-							class={`toy-card toy-card-interactive standard-card ${isLatest ? 'latest-card' : ''}`}
-						>
-							{isLatest && (
-								<div class="latest-pin">
-									<span>NEW</span>
-								</div>
-							)}
-							{post.data.heroImage && (
-								<div class="card-image-wrapper">
-									<Image 
-										width={360} 
-										height={200} 
-										src={post.data.heroImage} 
-										alt={post.data.title}
-										class="card-image"
-									/>
-								</div>
-							)}
-							<div class="card-content">
-								<span class="post-meta-badge">{isLatest ? '最新发布' : quad.subtitle}</span>
-								<h3 class="post-title">{post.data.title}</h3>
-								<p class="post-date">
-									<FormattedDate date={post.data.pubDate} />
-								</p>
-								<p class="post-desc">{post.data.description}</p>
-								<span class="read-more">阅读全文 →</span>
-							</div>
-						</a>
-					);
-				})}
+	{
+		posts.length === 0 ? (
+			<div class="empty-state toy-card">
+				<p>该分类下暂无文章，敬请期待！</p>
 			</div>
-		</div>
-	)}
+		) : (
+			<div class="posts-section">
+				<div class="posts-grid">
+					{posts.map((post, idx) => {
+						const isLatest = idx === 0;
+						return (
+							<a
+								href={withBase(`blog/${post.id}/`)}
+								class={`toy-card toy-card-interactive standard-card ${isLatest ? 'latest-card' : ''}`}
+							>
+								{isLatest && (
+									<div class="latest-pin">
+										<span>NEW</span>
+									</div>
+								)}
+								{post.data.heroImage && (
+									<div class="card-image-wrapper">
+										<Image
+											width={360}
+											height={200}
+											src={post.data.heroImage}
+											alt={post.data.title}
+											class="card-image"
+										/>
+									</div>
+								)}
+								<div class="card-content">
+									<span class="post-meta-badge">
+										{isLatest ? '最新发布' : quad.subtitle}
+									</span>
+									<h3 class="post-title">{post.data.title}</h3>
+									<p class="post-date">
+										<FormattedDate date={post.data.pubDate} />
+									</p>
+									<p class="post-desc">{post.data.description}</p>
+									<span class="read-more">阅读全文 →</span>
+								</div>
+							</a>
+						);
+					})}
+				</div>
+			</div>
+		)
+	}
 </ToyLayout>
 
 <style>
@@ -112,7 +115,7 @@ const posts = allPosts
 		display: inline-block;
 		padding: 0.3rem 0.8rem;
 		background-color: var(--accent);
-		color: #FFFFFF;
+		color: #ffffff;
 		border: 2px solid var(--border-color);
 		border-radius: 10px;
 		font-size: 0.8rem;
@@ -184,13 +187,12 @@ const posts = allPosts
 		box-shadow: 6px 6px 0px var(--accent);
 	}
 
-
 	.latest-pin {
 		position: absolute;
 		top: 1rem;
 		right: 1rem;
 		background-color: var(--accent);
-		color: #FFFFFF;
+		color: #ffffff;
 		font-family: var(--font-mono);
 		font-size: 0.75rem;
 		font-weight: 700;
@@ -271,7 +273,9 @@ const posts = allPosts
 		color: var(--accent);
 		font-size: 0.95rem;
 		align-self: flex-start;
-		transition: transform 0.2s ease, color 0.3s ease;
+		transition:
+			transform 0.2s ease,
+			color 0.3s ease;
 	}
 
 	.toy-card-interactive:hover .read-more {

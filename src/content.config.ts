@@ -35,11 +35,13 @@ const blog = defineCollection({
 		base: './src/content/blog',
 		pattern: '**/*.{md,mdx}',
 		generateId: ({ entry, data }) => {
-			const match = entry.match(/^([^/]+)\/(\d{4}-\d{2}-\d{2})-([^/]+)\.(md|mdx)$/);
+			const match = entry.match(
+				/^([^/]+)\/(\d{4}-\d{2}-\d{2})-([^/]+)\.(md|mdx)$/
+			);
 			if (!match) {
 				throw new Error(
 					`Invalid file path or format: "src/content/blog/${entry}".\n` +
-					`Expected structure: "src/content/blog/[category]/[YYYY]-[MM]-[DD]-[filename].{md,mdx}"`
+						`Expected structure: "src/content/blog/[category]/[YYYY]-[MM]-[DD]-[filename].{md,mdx}"`
 				);
 			}
 
@@ -48,19 +50,19 @@ const blog = defineCollection({
 			if (data.category && data.category !== pathCategory) {
 				throw new Error(
 					`Category mismatch in "src/content/blog/${entry}".\n` +
-					`Frontmatter category is "${data.category}", but directory is "${pathCategory}".`
+						`Frontmatter category is "${data.category}", but directory is "${pathCategory}".`
 				);
 			}
 
 			if (data.pubDate && !dateMatches(data.pubDate, pathDateStr)) {
 				throw new Error(
 					`Publication date mismatch in "src/content/blog/${entry}".\n` +
-					`Frontmatter pubDate is "${data.pubDate}", but file prefix is "${pathDateStr}".`
+						`Frontmatter pubDate is "${data.pubDate}", but file prefix is "${pathDateStr}".`
 				);
 			}
 
 			return entry.replace(/\.(md|mdx)$/, '');
-		}
+		},
 	}),
 	schema: ({ image }) =>
 		z.object({

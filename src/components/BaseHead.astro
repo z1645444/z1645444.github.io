@@ -12,11 +12,21 @@ interface Props {
 	title: string;
 	description: string;
 	image?: ImageMetadata;
+	type?: 'website' | 'article';
+	publishedTime?: Date;
+	modifiedTime?: Date;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = FallbackImage } = Astro.props;
+const {
+	title,
+	description,
+	image = FallbackImage,
+	type = 'website',
+	publishedTime,
+	modifiedTime,
+} = Astro.props;
 ---
 
 <!-- Global Metadata -->
@@ -46,46 +56,44 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta name="description" content={description} />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
+<meta property="og:type" content={type} />
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={new URL(image.src, Astro.url)} />
+{
+	type === 'article' && publishedTime && (
+		<meta
+			property="article:published_time"
+			content={publishedTime.toISOString()}
+		/>
+	)
+}
+{
+	type === 'article' && modifiedTime && (
+		<meta
+			property="article:modified_time"
+			content={modifiedTime.toISOString()}
+		/>
+	)
+}
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 
 <!-- Theme FOUC Prevention Script -->
 <script is:inline>
-	(function() {
+	(function () {
 		const storedTheme = localStorage.getItem('theme');
-		const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+		const prefersDark = window.matchMedia(
+			'(prefers-color-scheme: dark)'
+		).matches;
 		const activeTheme = storedTheme || (prefersDark ? 'dark' : 'light');
-		
+
 		if (activeTheme === 'dark') {
 			document.documentElement.setAttribute('data-theme', 'dark');
 		} else {
 			document.documentElement.setAttribute('data-theme', 'light');
 		}
 	})();
-
-	// Blur focused element before swap to release stuck active/focus states
-	document.addEventListener('astro:before-swap', () => {
-		if (document.activeElement && typeof document.activeElement.blur === 'function') {
-			document.activeElement.blur();
-		}
-	});
-
-	// Sync theme after View Transitions swap
-	document.addEventListener('astro:after-swap', () => {
-		const storedTheme = localStorage.getItem('theme');
-		const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-		const activeTheme = storedTheme || (prefersDark ? 'dark' : 'light');
-		
-		if (activeTheme === 'dark') {
-			document.documentElement.setAttribute('data-theme', 'dark');
-		} else {
-			document.documentElement.setAttribute('data-theme', 'light');
-		}
-	});
 </script>

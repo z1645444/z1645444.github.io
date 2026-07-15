@@ -15,36 +15,66 @@ interface Props {
 	activeCategory?: QuadrantId;
 }
 
-const { title, description, pubDate, updatedDate, heroImage, category, activeCategory } = Astro.props;
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	category,
+	activeCategory,
+} = Astro.props;
 const resolvedActiveCategory = activeCategory ?? category;
 
-const quad = QUADRANTS_CONFIG.quadrants.find((q) => q.id === resolvedActiveCategory);
+const quad = QUADRANTS_CONFIG.quadrants.find(
+	(q) => q.id === resolvedActiveCategory
+);
 ---
 
-<ToyLayout title={title} description={description} activeCategory={resolvedActiveCategory}>
+<ToyLayout
+	title={title}
+	description={description}
+	activeCategory={resolvedActiveCategory}
+	image={heroImage}
+	pageType={pubDate ? 'article' : 'website'}
+	publishedTime={pubDate}
+	modifiedTime={updatedDate}
+>
 	<article class="post-article">
-		{heroImage && (
-			<div class="article-hero-wrapper">
-				<Image width={960} height={480} src={heroImage} alt={title} class="article-hero-image" />
-			</div>
-		)}
-		
+		{
+			heroImage && (
+				<div class="article-hero-wrapper">
+					<Image
+						width={960}
+						height={480}
+						src={heroImage}
+						alt={title}
+						class="article-hero-image"
+					/>
+				</div>
+			)
+		}
+
 		<div class="article-meta">
-			{quad && (
-				<div class="article-category">
-					<span class="category-badge">{quad.subtitle}</span>
-				</div>
-			)}
-			{pubDate && (
-				<div class="article-date">
-					<FormattedDate date={pubDate} />
-					{updatedDate && (
-						<span class="last-updated">
-							（已于 <FormattedDate date={updatedDate} /> 更新）
-						</span>
-					)}
-				</div>
-			)}
+			{
+				quad && (
+					<div class="article-category">
+						<span class="category-badge">{quad.subtitle}</span>
+					</div>
+				)
+			}
+			{
+				pubDate && (
+					<div class="article-date">
+						<FormattedDate date={pubDate} />
+						{updatedDate && (
+							<span class="last-updated">
+								（已于 <FormattedDate date={updatedDate} /> 更新）
+							</span>
+						)}
+					</div>
+				)
+			}
 			<h1 class="article-title">{title}</h1>
 			<p class="article-desc">{description}</p>
 			<hr class="article-divider" />
@@ -88,7 +118,7 @@ const quad = QUADRANTS_CONFIG.quadrants.find((q) => q.id === resolvedActiveCateg
 		display: inline-block;
 		padding: 0.25rem 0.75rem;
 		background-color: var(--accent);
-		color: #FFFFFF;
+		color: #ffffff;
 		border: 2px solid var(--border-color);
 		border-radius: 10px;
 		font-size: 0.75rem;
@@ -161,7 +191,8 @@ const quad = QUADRANTS_CONFIG.quadrants.find((q) => q.id === resolvedActiveCateg
 		margin: 2rem 0 1rem 0;
 	}
 
-	.prose :global(ul), .prose :global(ol) {
+	.prose :global(ul),
+	.prose :global(ol) {
 		margin-bottom: 1.5rem;
 		padding-left: 2rem;
 	}
@@ -186,7 +217,7 @@ const quad = QUADRANTS_CONFIG.quadrants.find((q) => q.id === resolvedActiveCateg
 		.article-title {
 			font-size: 2.2rem;
 		}
-		
+
 		.article-hero-wrapper {
 			aspect-ratio: 16 / 9;
 		}

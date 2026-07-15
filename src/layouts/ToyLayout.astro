@@ -1,10 +1,13 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
+import HeaderLink from '../components/HeaderLink.astro';
 import QuadrantIcon from '../components/QuadrantIcon.astro';
+import type { ImageMetadata } from 'astro';
 import {
 	SITE_TITLE,
 	SITE_DESCRIPTION,
+	SITE_LOCALE,
 	QUADRANTS_CONFIG,
 	type QuadrantId,
 	withBase,
@@ -14,34 +17,51 @@ interface Props {
 	title?: string;
 	description?: string;
 	activeCategory?: QuadrantId;
+	image?: ImageMetadata;
+	pageType?: 'website' | 'article';
+	publishedTime?: Date;
+	modifiedTime?: Date;
 }
 
-const { 
-	title = SITE_TITLE, 
-	description = SITE_DESCRIPTION, 
-	activeCategory = '' 
+const {
+	title = SITE_TITLE,
+	description = SITE_DESCRIPTION,
+	activeCategory = '',
+	image,
+	pageType = 'website',
+	publishedTime,
+	modifiedTime,
 } = Astro.props;
 
 // Find active quadrant configuration
-const activeQuad = QUADRANTS_CONFIG.quadrants.find(q => q.id === activeCategory);
+const activeQuad = QUADRANTS_CONFIG.quadrants.find(
+	(q) => q.id === activeCategory
+);
 const accentColorLight = activeQuad ? activeQuad.colorLight : '#3A828A';
 const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={SITE_LOCALE}>
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead
+			title={title}
+			description={description}
+			image={image}
+			type={pageType}
+			publishedTime={publishedTime}
+			modifiedTime={modifiedTime}
+		/>
 		<!-- Dynamically override accent color variables based on category and theme -->
 		<style define:vars={{ accentColorLight, accentColorDark }}>
 			:root {
 				--accent: var(--accentColorLight);
 			}
-			:root[data-theme="dark"] {
+			:root[data-theme='dark'] {
 				--accent: var(--accentColorDark);
 			}
 			@media (prefers-color-scheme: dark) {
-				:root:not([data-theme="light"]) {
+				:root:not([data-theme='light']) {
 					--accent: var(--accentColorDark);
 				}
 			}
@@ -53,7 +73,10 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				flex-direction: column;
 				min-height: 100vh;
 				background-color: var(--bg-page);
-				background-image: radial-gradient(var(--dot-color) 2.5px, transparent 2.5px);
+				background-image: radial-gradient(
+					var(--dot-color) 2.5px,
+					transparent 2.5px
+				);
 				background-size: 28px 28px;
 				transition: background-color 0.2s ease-in-out;
 			}
@@ -72,7 +95,9 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				position: sticky;
 				top: 0;
 				z-index: 100;
-				transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+				transition:
+					background-color 0.2s ease-in-out,
+					border-color 0.2s ease-in-out;
 			}
 
 			.sidebar-top {
@@ -123,7 +148,10 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				text-decoration: none;
 				border: 2px solid transparent;
 				border-radius: 16px;
-				transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+				transition:
+					background-color 0.15s ease,
+					color 0.15s ease,
+					transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 			}
 
 			/* Inactive Link Default Hover Base (Raises up) */
@@ -135,7 +163,11 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 
 			/* Navigation colors come from QUADRANTS_CONFIG through CSS variables. */
 			.nav-item-link:hover {
-				background-color: color-mix(in srgb, var(--nav-color-light) 12%, transparent);
+				background-color: color-mix(
+					in srgb,
+					var(--nav-color-light) 12%,
+					transparent
+				);
 				color: var(--nav-color-light);
 			}
 
@@ -143,60 +175,69 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				border-color: var(--nav-color-light);
 			}
 
-			:global([data-theme="dark"]) .nav-item-link:hover {
-				background-color: color-mix(in srgb, var(--nav-color-dark) 18%, transparent);
+			:global([data-theme='dark']) .nav-item-link:hover {
+				background-color: color-mix(
+					in srgb,
+					var(--nav-color-dark) 18%,
+					transparent
+				);
 				color: var(--nav-color-dark);
 			}
 
-			:global([data-theme="dark"]) .nav-item-link:hover .icon-wrapper {
+			:global([data-theme='dark']) .nav-item-link:hover .icon-wrapper {
 				border-color: var(--nav-color-dark);
 			}
 
 			@media (prefers-color-scheme: dark) {
-				:global(:root:not([data-theme="light"])) .nav-item-link:hover {
-					background-color: color-mix(in srgb, var(--nav-color-dark) 18%, transparent);
+				:global(:root:not([data-theme='light'])) .nav-item-link:hover {
+					background-color: color-mix(
+						in srgb,
+						var(--nav-color-dark) 18%,
+						transparent
+					);
 					color: var(--nav-color-dark);
 				}
 
-				:global(:root:not([data-theme="light"])) .nav-item-link:hover .icon-wrapper {
+				:global(:root:not([data-theme='light']))
+					.nav-item-link:hover
+					.icon-wrapper {
 					border-color: var(--nav-color-dark);
 				}
 			}
 
-
 			/* Active Link Styles (Flat by default for horizontal top bar alignment) */
 			.nav-item-link.active {
 				background-color: var(--accent);
-				color: #FFFFFF;
+				color: #ffffff;
 				border-color: var(--border-color);
 				transform: none;
 				box-shadow: none;
 			}
 			.nav-item-link.active .icon-wrapper {
-				background-color: rgba(255,255,255,0.2);
-				border-color: #FFFFFF;
+				background-color: rgba(255, 255, 255, 0.2);
+				border-color: #ffffff;
 			}
 
 			/* Active Link Hover State (Raises up, using filter to adjust brightness dynamically) */
 			.nav-item-link.active:hover {
 				background-color: var(--accent);
 				filter: brightness(0.92);
-				color: #FFFFFF;
+				color: #ffffff;
 				border-color: var(--border-color);
 				transform: translate(-2px, -2px);
 				box-shadow: 3px 3px 0 var(--shadow-flat);
 			}
-			:global([data-theme="dark"]) .nav-item-link.active:hover {
+			:global([data-theme='dark']) .nav-item-link.active:hover {
 				filter: brightness(1.1);
 			}
 			@media (prefers-color-scheme: dark) {
-				:global(:root:not([data-theme="light"])) .nav-item-link.active:hover {
+				:global(:root:not([data-theme='light'])) .nav-item-link.active:hover {
 					filter: brightness(1.1);
 				}
 			}
 			.nav-item-link.active:hover .icon-wrapper {
-				background-color: rgba(255,255,255,0.25);
-				border-color: #FFFFFF;
+				background-color: rgba(255, 255, 255, 0.25);
+				border-color: #ffffff;
 			}
 
 			.icon-wrapper {
@@ -245,7 +286,10 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 				box-shadow: 5px 5px 0 var(--shadow-flat);
 				padding: 3rem;
 				flex: 1;
-				transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+				transition:
+					background-color 0.2s ease-in-out,
+					border-color 0.2s ease-in-out,
+					box-shadow 0.2s ease-in-out;
 			}
 
 			/* Tablet View Layout Adjustments */
@@ -323,34 +367,39 @@ const accentColorDark = activeQuad ? activeQuad.colorDark : '#4C9F9B';
 	<body>
 		<div class="app-container">
 			<!-- Sidebar -->
-			<aside class="sidebar">
+			<header class="sidebar">
 				<div class="sidebar-top">
 					<a href={withBase()} class="logo">
 						{SITE_TITLE}<span class="logo-dot">.</span>
 					</a>
-					<ul class="nav-list">
-						{QUADRANTS_CONFIG.quadrants.map((quad) => (
-							<li>
-								<a 
-									href={withBase(quad.path)}
-									class={`nav-item-link ${activeCategory === quad.id ? 'active' : ''}`}
-									data-category={quad.id}
-									style={`--nav-color-light: ${quad.colorLight}; --nav-color-dark: ${quad.colorDark};`}
-								>
-									<span class="icon-wrapper">
-										<QuadrantIcon name={quad.icon} size={20} />
-									</span>
-									<span>{quad.title}</span>
-								</a>
-							</li>
-						))}
-					</ul>
+					<nav aria-label="主要导航">
+						<ul class="nav-list">
+							{
+								QUADRANTS_CONFIG.quadrants.map((quad) => (
+									<li>
+										<HeaderLink
+											path={quad.path}
+											active={activeCategory === quad.id}
+											class="nav-item-link"
+											data-category={quad.id}
+											style={`--nav-color-light: ${quad.colorLight}; --nav-color-dark: ${quad.colorDark};`}
+										>
+											<span class="icon-wrapper">
+												<QuadrantIcon name={quad.icon} size={20} />
+											</span>
+											<span>{quad.title}</span>
+										</HeaderLink>
+									</li>
+								))
+							}
+						</ul>
+					</nav>
 				</div>
 				<div class="sidebar-bottom">
 					<span class="sidebar-bottom-label">主题样式</span>
 					<ThemeToggle />
 				</div>
-			</aside>
+			</header>
 
 			<!-- Main Area -->
 			<main class="main-content">
