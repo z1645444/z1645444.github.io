@@ -16,6 +16,8 @@ import {
 import { drawMusicGraph } from '../lib/musicGraph/renderer';
 import type { GraphNode } from '../lib/musicGraph/types';
 
+const RESIZE_REHEAT_RATIO = 0.1;
+
 function initMusicGraph(): () => void {
 	const eventController = new AbortController();
 	const { signal } = eventController;
@@ -109,6 +111,8 @@ function initMusicGraph(): () => void {
 	// 自适应画布大小
 	let canvasInitialized = false;
 	let pixelRatio = 0;
+	let lastResizeReheatWidth = 0;
+	let lastResizeReheatHeight = 0;
 	function resizeCanvas() {
 		const rect = canvas.getBoundingClientRect();
 		const newWidth = Math.floor(rect.width);
@@ -124,8 +128,10 @@ function initMusicGraph(): () => void {
 		if (!dimensionsChanged && !pixelRatioChanged) return;
 		const shouldReheatForResize =
 			!canvasInitialized ||
-			Math.abs(newWidth - viewportWidth) / viewportWidth >= 0.1 ||
-			Math.abs(newHeight - viewportHeight) / viewportHeight >= 0.1;
+			Math.abs(newWidth - lastResizeReheatWidth) / lastResizeReheatWidth >=
+				RESIZE_REHEAT_RATIO ||
+			Math.abs(newHeight - lastResizeReheatHeight) / lastResizeReheatHeight >=
+				RESIZE_REHEAT_RATIO;
 
 		if (dimensionsChanged) {
 			if (canvasInitialized) {
@@ -169,6 +175,13 @@ function initMusicGraph(): () => void {
 		ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 		canvasInitialized = true;
 		if (dimensionsChanged && shouldReheatForResize) {
+			lastResizeReheatWidth = newWidth;
+			lastResizeReheatHeight = newHeight;
+			if (import.meta.env.DEV) {
+				canvas.dataset.resizeReheatCount = String(
+					Number(canvas.dataset.resizeReheatCount ?? 0) + 1
+				);
+			}
 			startAnimation(true);
 		} else {
 			requestRender();

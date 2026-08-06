@@ -102,9 +102,14 @@ test('does not reheat the graph when clicking an active node without moving it',
 		timeout: 10_000,
 	});
 	await page.locator('.graph-a11y-list [data-node-id="sunset-guitar"]').focus();
+	const selectionRenderCount = Number(
+		await canvas.getAttribute('data-render-count')
+	);
 	await page.keyboard.press('Enter');
 	await expect(page.locator('#node-title')).toHaveText('日落与吉他');
-	await page.waitForTimeout(150);
+	await expect
+		.poll(async () => Number(await canvas.getAttribute('data-render-count')))
+		.toBeGreaterThan(selectionRenderCount);
 	expect(
 		Number(await canvas.getAttribute('data-simulation-alpha'))
 	).toBeLessThan(0.1);
@@ -336,4 +341,57 @@ test('clamps nodes and preserves dragging when the canvas is resized', async ({
 	await page.mouse.up();
 	await expect(canvas).not.toHaveAttribute('data-dragged-node', /.+/);
 	await expect(page.locator('#hud-status')).toHaveText('REDUCED');
+});
+
+test('reheats after cumulative resize changes cross the threshold', async ({
+	page,
+}) => {
+	await page.goto('/musical/');
+	const canvas = page.locator('#physics-canvas');
+	await expect(page.locator('#hud-status')).toHaveText('STABLE', {
+		timeout: 10_000,
+	});
+	const initialBox = await canvas.boundingBox();
+	if (!initialBox) throw new Error('Graph canvas has no bounding box.');
+	const initialReheatCount = Number(
+		await canvas.getAttribute('data-resize-reheat-count')
+	);
+	let renderCount = Number(await canvas.getAttribute('data-render-count'));
+	const setCanvasWidth = (width: number) =>
+		page.evaluate((targetWidth) => {
+			const canvasCard = document.querySelector<HTMLElement>('.canvas-card');
+			const graphCanvas =
+				document.querySelector<HTMLCanvasElement>('#physics-canvas');
+			if (!canvasCard || !graphCanvas) return;
+			const widthOffset =
+				canvasCard.getBoundingClientRect().width -
+				graphCanvas.getBoundingClientRect().width;
+			canvasCard.style.width = `${targetWidth + widthOffset}px`;
+		}, width);
+
+	await setCanvasWidth(initialBox.width * 0.94);
+	await expect
+		.poll(async () => (await canvas.boundingBox())?.width)
+		.toBeLessThan(initialBox.width * 0.96);
+	await expect
+		.poll(async () => Number(await canvas.getAttribute('data-render-count')))
+		.toBeGreaterThan(renderCount);
+	expect(Number(await canvas.getAttribute('data-resize-reheat-count'))).toBe(
+		initialReheatCount
+	);
+	expect(
+		Number(await canvas.getAttribute('data-simulation-alpha'))
+	).toBeLessThan(0.1);
+
+	renderCount = Number(await canvas.getAttribute('data-render-count'));
+	await setCanvasWidth(initialBox.width * 0.88);
+	await expect
+		.poll(async () =>
+			Number(await canvas.getAttribute('data-resize-reheat-count'))
+		)
+		.toBe(initialReheatCount + 1);
+	await expect(page.locator('#hud-status')).toHaveText('RUNNING');
+	await expect
+		.poll(async () => Number(await canvas.getAttribute('data-render-count')))
+		.toBeGreaterThan(renderCount);
 });
