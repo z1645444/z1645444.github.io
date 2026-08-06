@@ -11,6 +11,9 @@
 		"dev": "astro dev",
 		"build": "astro build",
 		"check": "astro check",
+		"test": "node --experimental-strip-types --test src/lib/musicGraph/layout.test.ts src/lib/musicGraph/physics.test.ts",
+		"test:e2e:install": "playwright install chromium",
+		"test:e2e": "sh scripts/test-e2e.sh",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"preview": "astro preview",
@@ -25,6 +28,7 @@
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.9",
+		"@playwright/test": "^1.61.1",
 		"prettier": "^3.6.2",
 		"prettier-plugin-astro": "^0.14.1",
 		"shiki": "^4.3.1",

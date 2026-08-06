@@ -18,10 +18,21 @@ pnpm dev
 | 命令                | 用途                              |
 | ------------------- | --------------------------------- |
 | `pnpm check`        | 检查 Astro、TypeScript 和内容类型 |
+| `pnpm test`         | 运行 graph 布局和物理单元测试     |
+| `pnpm test:e2e`     | 运行 Playwright 浏览器测试        |
 | `pnpm format`       | 格式化项目文件                    |
 | `pnpm format:check` | 检查项目文件格式                  |
 | `pnpm build`        | 构建生产版本到 `dist/`            |
 | `pnpm preview`      | 本地预览生产构建                  |
+
+首次运行浏览器测试前，需要安装 Playwright Chromium：
+
+```bash
+pnpm test:e2e:install
+pnpm test:e2e
+```
+
+E2E 测试会在独立的 `4325` 端口启动后台 Astro server，并在测试结束后自动停止。
 
 ## 写作
 
@@ -41,6 +52,7 @@ pubDate: '2026-07-15'
 updatedDate: '2026-07-16' # 可选
 heroImage: '../../../assets/example.jpg' # 可选
 category: 'build'
+tags: ['Astro', 'Blog']
 ---
 ```
 

@@ -46,6 +46,43 @@ const posts = allPosts
 	</div>
 
 	{
+		category === 'explore' && (
+			<a
+				href={withBase('musical/')}
+				class="toy-card toy-card-interactive musical-explore-banner"
+			>
+				<div class="banner-icon-circle">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="3"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="M9 18V5l12-2v13" />
+						<circle cx="6" cy="18" r="3" />
+						<circle cx="18" cy="16" r="3" />
+					</svg>
+				</div>
+				<div class="banner-text">
+					<div class="banner-title">
+						音律探索图谱
+						<span class="banner-badge">SUB ROUTE</span>
+					</div>
+					<div class="banner-desc">
+						进入我的音乐探索网络，通过交互式物理力学图谱探索作品与灵感的衍生脉络。
+					</div>
+				</div>
+				<div class="banner-arrow">进入地图 →</div>
+			</a>
+		)
+	}
+
+	{
 		posts.length === 0 ? (
 			<div class="empty-state toy-card">
 				<p>该分类下暂无文章，敬请期待！</p>
@@ -303,6 +340,93 @@ const posts = allPosts
 
 		.category-title {
 			font-size: 2.2rem;
+		}
+	}
+
+	/* Musical Explore Banner */
+	.musical-explore-banner {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+		padding: 1.5rem 2rem;
+		background: linear-gradient(135deg, var(--bg-card), var(--bg-sidebar));
+		margin-bottom: 2.5rem;
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.banner-icon-circle {
+		width: 56px;
+		height: 56px;
+		border-radius: 50%;
+		background-color: var(--accent);
+		border: 2px solid var(--border-color);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		color: #ffffff;
+		transition: transform 0.2s ease;
+	}
+
+	.musical-explore-banner:hover .banner-icon-circle {
+		transform: scale(1.1) rotate(-5deg);
+	}
+
+	.banner-text {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+	}
+
+	.banner-title {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: var(--text-main);
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+	}
+
+	.banner-badge {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		background-color: var(--accent);
+		color: #ffffff;
+		padding: 0.15rem 0.4rem;
+		border-radius: 6px;
+		border: 1px solid var(--border-color);
+		font-weight: 700;
+	}
+
+	.banner-desc {
+		font-size: 0.85rem;
+		color: var(--text-muted);
+		line-height: 1.5;
+	}
+
+	.banner-arrow {
+		font-weight: 700;
+		color: var(--accent);
+		font-size: 0.95rem;
+		transition: transform 0.2s ease;
+	}
+
+	.musical-explore-banner:hover .banner-arrow {
+		transform: translateX(4px);
+		color: var(--accent-dark);
+	}
+
+	@media (max-width: 600px) {
+		.musical-explore-banner {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 1rem;
+			padding: 1.2rem;
+		}
+		.banner-arrow {
+			align-self: flex-end;
 		}
 	}
 </style>

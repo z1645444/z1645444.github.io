@@ -72,6 +72,12 @@ const blog = defineCollection({
 			updatedDate: z.coerce.date().optional(),
 			heroImage: z.optional(image()),
 			category: z.enum(BLOG_CATEGORY_IDS),
+			tags: z
+				.array(z.string().trim().min(1))
+				.min(1)
+				.refine((tags) => new Set(tags).size === tags.length, {
+					message: 'Tags must be unique.',
+				}),
 		}),
 });
 
