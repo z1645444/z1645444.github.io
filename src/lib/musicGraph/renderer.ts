@@ -8,6 +8,9 @@ export function drawMusicGraph({
 	hoveredNode,
 	width: viewportWidth,
 	height: viewportHeight,
+	panX = 0,
+	panY = 0,
+	zoom = 1,
 }: {
 	ctx: CanvasRenderingContext2D;
 	nodes: GraphNode[];
@@ -16,10 +19,14 @@ export function drawMusicGraph({
 	hoveredNode: GraphNode | null;
 	width: number;
 	height: number;
+	panX?: number;
+	panY?: number;
+	zoom?: number;
 }) {
+	ctx.save();
 	ctx.clearRect(0, 0, viewportWidth, viewportHeight);
 
-	// 绘制亮暗模式下的网格参考线
+	// 绘制亮暗模式下的网格参考线 (根据平移和缩放平滑平铺)
 	const isDark =
 		document.documentElement.getAttribute('data-theme') === 'dark' ||
 		(!document.documentElement.getAttribute('data-theme') &&
@@ -29,19 +36,25 @@ export function drawMusicGraph({
 		? 'rgba(235, 219, 178, 0.04)'
 		: 'rgba(40, 40, 40, 0.04)';
 	ctx.lineWidth = 1;
-	const gridSize = 40;
-	for (let x = 0; x < viewportWidth; x += gridSize) {
+	const gridSize = Math.max(15, 40 * zoom);
+	const offsetX = ((panX % gridSize) + gridSize) % gridSize;
+	const offsetY = ((panY % gridSize) + gridSize) % gridSize;
+	for (let x = offsetX; x < viewportWidth; x += gridSize) {
 		ctx.beginPath();
 		ctx.moveTo(x, 0);
 		ctx.lineTo(x, viewportHeight);
 		ctx.stroke();
 	}
-	for (let y = 0; y < viewportHeight; y += gridSize) {
+	for (let y = offsetY; y < viewportHeight; y += gridSize) {
 		ctx.beginPath();
 		ctx.moveTo(0, y);
 		ctx.lineTo(viewportWidth, y);
 		ctx.stroke();
 	}
+
+	// 视角变换
+	ctx.translate(panX, panY);
+	ctx.scale(zoom, zoom);
 
 	// 1. 绘制物理连线（弹簧琴弦）
 	links.forEach((link) => {
@@ -173,16 +186,24 @@ export function drawMusicGraph({
 		// 2.4 绘制乐器圆盘内部同心圆线条 (黑胶唱片螺纹感)
 		ctx.strokeStyle = 'rgba(255,255,255,0.12)';
 		ctx.lineWidth = 1;
-		ctx.beginPath();
-		ctx.arc(0, 0, node.radius - 12, 0, Math.PI * 2);
-		ctx.stroke();
-		ctx.beginPath();
-		ctx.arc(0, 0, node.radius - 24, 0, Math.PI * 2);
-		ctx.stroke();
+		if (node.radius - 12 > 6) {
+			ctx.beginPath();
+			ctx.arc(0, 0, node.radius - 12, 0, Math.PI * 2);
+			ctx.stroke();
+		}
+		if (node.radius - 24 > 6) {
+			ctx.beginPath();
+			ctx.arc(0, 0, node.radius - 24, 0, Math.PI * 2);
+			ctx.stroke();
+		}
 
 		// 2.5 绘制文字标签
+		const titleFontSize = Math.max(
+			10,
+			Math.min(13, Math.floor(node.radius / 3.8))
+		);
 		ctx.fillStyle = '#ffffff';
-		ctx.font = 'bold 13px Atkinson, sans-serif';
+		ctx.font = `bold ${titleFontSize}px Atkinson, sans-serif`;
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
 
@@ -192,25 +213,28 @@ export function drawMusicGraph({
 			const mid = Math.floor(node.title.length / 2);
 			const part1 = node.title.substring(0, mid);
 			const part2 = node.title.substring(mid);
-			ctx.fillText(part1, 0, -8);
-			ctx.fillText(part2, 0, 8);
+			const lineOffset = titleFontSize * 0.6;
+			ctx.fillText(part1, 0, -lineOffset);
+			ctx.fillText(part2, 0, lineOffset);
 		} else {
 			ctx.fillText(node.title, 0, 0);
 		}
 
 		// 2.6 绘制外挂的小小类型标识 (比如 [Jam] 或 [Synth])
 		ctx.fillStyle = isDark ? '#ebdbb2' : '#282828';
-		ctx.font = 'bold 9px monospace';
+		const tagFontSize = Math.max(8, Math.min(9, Math.floor(titleFontSize * 0.75)));
+		ctx.font = `bold ${tagFontSize}px monospace`;
 		const typeLabel = node.type.split(' ')[0];
 		const tw = ctx.measureText(typeLabel).width;
 
 		ctx.fillStyle = isDark ? '#1d2021' : '#fbf1c7';
-		ctx.fillRect(-tw / 2 - 4, node.radius - 4, tw + 8, 10);
-		ctx.strokeRect(-tw / 2 - 4, node.radius - 4, tw + 8, 10);
+		ctx.fillRect(-tw / 2 - 3, node.radius - 4, tw + 6, tagFontSize + 2);
+		ctx.strokeRect(-tw / 2 - 3, node.radius - 4, tw + 6, tagFontSize + 2);
 
 		ctx.fillStyle = isDark ? '#ebdbb2' : '#282828';
 		ctx.fillText(typeLabel, 0, node.radius + 1);
 
 		ctx.restore();
 	});
+	ctx.restore();
 }

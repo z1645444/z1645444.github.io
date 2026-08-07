@@ -127,14 +127,15 @@ const musicRelations = new Map(
 				backdrop-filter: blur(4px);
 				border: 1px solid var(--border-color);
 				border-radius: 12px;
-				padding: 0.5rem 1rem;
+				padding: 0.5rem 0.8rem;
 				font-family: var(--font-mono);
 				font-size: 0.75rem;
-				pointer-events: none;
 				z-index: 10;
 				display: flex;
-				gap: 1rem;
+				align-items: center;
+				gap: 0.8rem;
 				color: var(--text-main);
+				pointer-events: auto;
 			}
 
 			.canvas-hud-item span {
@@ -142,20 +143,26 @@ const musicRelations = new Map(
 				font-weight: 700;
 			}
 
-			.canvas-help-tip {
-				position: absolute;
-				bottom: 1rem;
-				left: 50%;
-				transform: translateX(-50%);
-				background: color-mix(in srgb, var(--bg-page) 85%, transparent);
-				backdrop-filter: blur(4px);
+			.hud-reset-btn {
+				background: var(--bg-canvas);
 				border: 1px solid var(--border-color);
-				border-radius: 10px;
-				padding: 0.4rem 1rem;
-				font-size: 0.75rem;
-				pointer-events: none;
-				z-index: 10;
-				color: var(--text-muted);
+				border-radius: 6px;
+				padding: 0.15rem 0.5rem;
+				font-family: var(--font-mono);
+				font-size: 0.7rem;
+				font-weight: 700;
+				color: var(--text-main);
+				cursor: pointer;
+				transition: background-color 0.15s ease, transform 0.1s ease;
+			}
+
+			.hud-reset-btn:hover {
+				background: var(--accent);
+				color: #ffffff;
+			}
+
+			.hud-reset-btn:active {
+				transform: scale(0.95);
 			}
 
 			canvas {
@@ -164,10 +171,11 @@ const musicRelations = new Map(
 				left: 0;
 				width: 100%;
 				height: 100%;
-				display: block;
-				cursor: default;
-				background-color: var(--bg-canvas);
-			}
+					display: block;
+					cursor: default;
+					touch-action: none;
+					background-color: var(--bg-canvas);
+				}
 
 			.graph-a11y-list {
 				position: absolute;
@@ -455,7 +463,11 @@ const musicRelations = new Map(
 			@media (max-width: 900px) {
 				.studio-workbench {
 					grid-template-columns: 1fr;
-					grid-template-rows: 500px auto;
+					grid-template-rows: min(48vh, 380px) auto;
+					gap: 1.2rem;
+				}
+				.canvas-card {
+					min-height: 0;
 				}
 				.control-deck {
 					max-height: none;
@@ -463,13 +475,27 @@ const musicRelations = new Map(
 			}
 
 			@media (max-width: 600px) {
+				.studio-workbench {
+					grid-template-rows: 320px auto;
+					gap: 1rem;
+				}
 				.header-bar {
 					flex-direction: column;
 					align-items: flex-start;
-					gap: 1rem;
+					gap: 0.8rem;
 				}
 				.musical-page-container {
-					padding: 0.8rem;
+					padding: 0.6rem;
+				}
+				.control-deck {
+					padding: 1rem;
+					border-radius: 20px;
+					box-shadow: 4px 4px 0px var(--shadow-flat);
+				}
+				.analog-btn {
+					padding: 0.7rem 0.8rem;
+					font-size: 0.85rem;
+					border-radius: 12px;
 				}
 			}
 		</style>
@@ -513,13 +539,14 @@ const musicRelations = new Map(
 						<div class="canvas-hud-item">
 							羁绊: <span id="hud-links-count">0</span>
 						</div>
-						<div class="canvas-hud-item">
-							状态: <span
-								id="hud-status"
-								aria-live="polite"
-								style="color: var(--accent);">READY</span
-							>
-						</div>
+						<button
+							type="button"
+							id="hud-reset-view"
+							class="hud-reset-btn"
+							title="重置视角与缩放"
+						>
+							复位视角
+						</button>
 					</div>
 
 					<canvas id="physics-canvas" aria-hidden="true"></canvas>
@@ -547,10 +574,6 @@ const musicRelations = new Map(
 							))
 						}
 					</ul>
-
-					<div class="canvas-help-tip">
-						鼠标左键拖拽物理节点 // 点击节点激活控制台面板
-					</div>
 				</div>
 
 				<!-- Right Vintage Control Deck (Simplified Card Panel) -->

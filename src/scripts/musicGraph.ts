@@ -47,7 +47,7 @@ function initMusicGraph(): () => void {
 
 	const hudNodesCount = getElement('hud-nodes-count');
 	const hudLinksCount = getElement('hud-links-count');
-	const hudStatus = getElement('hud-status');
+	const hudStatus = document.getElementById('hud-status');
 	const logScreen = getElement('log-screen');
 	const emptyState = getElement('node-empty-state');
 	const detailsPanel = getElement('node-details');
@@ -68,7 +68,7 @@ function initMusicGraph(): () => void {
 		'READY' | 'RUNNING' | 'STABLE' | 'DRAGGING' | 'PAUSED' | 'REDUCED';
 	function setGraphStatus(status: GraphStatus) {
 		if (import.meta.env.DEV) canvas.dataset.graphStatus = status;
-		if (hudStatus.textContent === status) return;
+		if (!hudStatus || hudStatus.textContent === status) return;
 		hudStatus.textContent = status;
 	}
 
@@ -85,6 +85,19 @@ function initMusicGraph(): () => void {
 	let dragStartPointer: { x: number; y: number } | null = null;
 	let dragOffset: { x: number; y: number } | null = null;
 	let dragPointerClient: { x: number; y: number } | null = null;
+
+	// Canvas 视角平移 (Pan) 与 缩放 (Zoom) 状态
+	let panX = 0;
+	let panY = 0;
+	let zoom = 1;
+	let targetPanX = 0;
+	let targetPanY = 0;
+	let targetZoom = 1;
+
+	let isPanning = false;
+	let panStartPointer: { x: number; y: number } | null = null;
+	let panStartOffset: { x: number; y: number } | null = null;
+
 	let animationFrame = 0;
 	let animationRunning = false;
 	let renderFrame = 0;
@@ -137,11 +150,6 @@ function initMusicGraph(): () => void {
 			if (canvasInitialized) {
 				hoveredNode = null;
 				canvas.style.cursor = draggedNode ? 'grabbing' : 'default';
-			}
-			if (!layoutInitialized) {
-				resetNodeLayout(nodes, newWidth, newHeight);
-				layoutInitialized = true;
-			} else if (canvasInitialized) {
 				resizeNodeLayout(
 					nodes,
 					viewportWidth,
@@ -149,20 +157,27 @@ function initMusicGraph(): () => void {
 					newWidth,
 					newHeight
 				);
+			} else {
+				resetNodeLayout(nodes, newWidth, newHeight);
+				layoutInitialized = true;
 			}
 			nodes.forEach((node) =>
 				clampGraphNodePosition(node, newWidth, newHeight)
 			);
 			if (draggedNode && dragPointerClient) {
 				const canvasRect = canvas.getBoundingClientRect();
-				const pointer = {
+				const canvasPointer = {
 					x: dragPointerClient.x - canvasRect.left,
 					y: dragPointerClient.y - canvasRect.top,
 				};
-				dragStartPointer = pointer;
+				const worldPointer = {
+					x: (canvasPointer.x - panX) / zoom,
+					y: (canvasPointer.y - panY) / zoom,
+				};
+				dragStartPointer = canvasPointer;
 				dragOffset = {
-					x: draggedNode.x - pointer.x,
-					y: draggedNode.y - pointer.y,
+					x: draggedNode.x - worldPointer.x,
+					y: draggedNode.y - worldPointer.y,
 				};
 			}
 		}
@@ -231,7 +246,7 @@ function initMusicGraph(): () => void {
 			const distance = Math.sqrt(dx * dx + dy * dy);
 
 			// 如果鼠标距离线段非常近，触发物理拨弦
-			if (distance < 12 && !draggedNode) {
+			if (distance < 12 && !draggedNode && !isPanning) {
 				if (!link.plucked) {
 					link.plucked = true;
 					link.pluckAmplitude = 12; // 初始偏离像素
@@ -243,7 +258,7 @@ function initMusicGraph(): () => void {
 		if (pluckedLink) startAnimation();
 	}
 
-	// --- 控制面板 UI 交互 ---
+	// --- 控制面板 UI 交互与节点自动居中 ---
 	function selectNode(node: GraphNode) {
 		if (activeNode === node) return;
 		activeNode = node;
@@ -274,9 +289,20 @@ function initMusicGraph(): () => void {
 		});
 		nodeTags.replaceChildren(...tagElements);
 
+		// 选定节点时平滑移动视角，将目标节点居中呈现在画布上半区域，避免被控制面板遮挡
+		targetPanX = viewportWidth / 2 - node.x * zoom;
+		targetPanY = Math.max(
+			-viewportHeight * 0.35,
+			Math.min(
+				viewportHeight * 0.35,
+				viewportHeight * 0.42 - node.y * zoom
+			)
+		);
+
 		pluckConnectedLinks(links, node, reducedMotionQuery.matches);
 		startAnimation();
 	}
+
 	function updatePhysics() {
 		updateGraphPhysics(
 			nodes,
@@ -287,6 +313,7 @@ function initMusicGraph(): () => void {
 			simulationAlpha
 		);
 	}
+
 	// --- Canvas 图谱渲染逻辑 ---
 	function drawGraph() {
 		drawMusicGraph({
@@ -297,6 +324,9 @@ function initMusicGraph(): () => void {
 			hoveredNode,
 			width: viewportWidth,
 			height: viewportHeight,
+			panX,
+			panY,
+			zoom,
 		});
 		if (import.meta.env.DEV) {
 			canvas.dataset.renderCount = String(
@@ -306,26 +336,37 @@ function initMusicGraph(): () => void {
 			if (activeNode) {
 				canvas.dataset.activeNodeX = String(activeNode.x);
 				canvas.dataset.activeNodeY = String(activeNode.y);
+				canvas.dataset.activeNodeScreenX = String(activeNode.x * zoom + panX);
+				canvas.dataset.activeNodeScreenY = String(activeNode.y * zoom + panY);
 			}
 		}
 	}
-	// --- 物理沙盒事件交互监听 ---
-	function getMouseCoords(e: MouseEvent | TouchEvent) {
+
+	// 转换屏幕坐标为世界坐标 (受 pan 与 zoom 影响)
+	function getPointerWorldCoords(e: MouseEvent | TouchEvent) {
 		const rect = canvas.getBoundingClientRect();
-		// 支持移动端 Touch 与 PC 鼠标
-		const touch = 'touches' in e ? e.touches[0] : undefined;
+		const touch = 'touches' in e && e.touches.length > 0 ? e.touches[0] : undefined;
 		const mouse = e as MouseEvent;
 		const clientX = touch?.clientX ?? mouse.clientX;
 		const clientY = touch?.clientY ?? mouse.clientY;
+
+		const canvasX = clientX - rect.left;
+		const canvasY = clientY - rect.top;
+
+		const worldX = (canvasX - panX) / zoom;
+		const worldY = (canvasY - panY) / zoom;
+
 		return {
-			x: clientX - rect.left,
-			y: clientY - rect.top,
+			x: worldX,
+			y: worldY,
+			canvasX,
+			canvasY,
 			clientX,
 			clientY,
 		};
 	}
 
-	// 检查鼠标在哪个节点内部
+	// 检查世界坐标下是否击中节点
 	function getNodeAtCoords(x: number, y: number): GraphNode | null {
 		for (let i = nodes.length - 1; i >= 0; i--) {
 			const node = nodes[i];
@@ -339,33 +380,44 @@ function initMusicGraph(): () => void {
 		return null;
 	}
 
-	// 监听鼠标悬停与划过连线
+	// 监听鼠标/触控移动
 	function handleMouseMove(e: MouseEvent | TouchEvent) {
-		const coords = getMouseCoords(e);
+		const coords = getPointerWorldCoords(e);
 
-		// 1. 悬停判断
+		// 0. 画布背景拖拽平移中
+		if (isPanning && panStartPointer && panStartOffset) {
+			if (e.cancelable) e.preventDefault();
+			panX = panStartOffset.x + (coords.clientX - panStartPointer.x);
+			panY = panStartOffset.y + (coords.clientY - panStartPointer.y);
+			targetPanX = panX;
+			targetPanY = panY;
+			requestRender();
+			return;
+		}
+
+		// 1. 节点悬停判断
 		const prevHover = hoveredNode;
 		hoveredNode = getNodeAtCoords(coords.x, coords.y);
 
 		if (prevHover !== hoveredNode) {
 			if (hoveredNode) {
 				canvas.style.cursor = 'grab';
-			} else {
+			} else if (!isPanning) {
 				canvas.style.cursor = 'default';
 			}
 			requestRender();
 		}
 
-		// 2. 被拖拽节点锁定跟随
+		// 2. 被拖拽节点跟随
 		if (draggedNode) {
-			e.preventDefault();
+			if (e.cancelable) e.preventDefault();
 			dragPointerClient = { x: coords.clientX, y: coords.clientY };
 			setGraphStatus('DRAGGING');
 			canvas.style.cursor = 'grabbing';
 			const pointerDistance = dragStartPointer
 				? Math.hypot(
-						coords.x - dragStartPointer.x,
-						coords.y - dragStartPointer.y
+						coords.canvasX - dragStartPointer.x,
+						coords.canvasY - dragStartPointer.y
 					)
 				: 0;
 			if (draggedNodeMoved || pointerDistance > 2) {
@@ -384,28 +436,43 @@ function initMusicGraph(): () => void {
 	}
 
 	function handleMouseDown(e: MouseEvent | TouchEvent) {
-		const coords = getMouseCoords(e);
+		const coords = getPointerWorldCoords(e);
 		const clickedNode = getNodeAtCoords(coords.x, coords.y);
 
 		if (clickedNode) {
 			draggedNode = clickedNode;
 			draggedNodeMoved = false;
-			dragStartPointer = coords;
+			dragStartPointer = { x: coords.canvasX, y: coords.canvasY };
 			dragPointerClient = { x: coords.clientX, y: coords.clientY };
 			dragOffset = {
 				x: clickedNode.x - coords.x,
 				y: clickedNode.y - coords.y,
 			};
-			if (import.meta.env.DEV) canvas.dataset.draggedNode = clickedNode.id;
+		if (import.meta.env.DEV) canvas.dataset.draggedNode = clickedNode.id;
 			selectNode(clickedNode);
+			const selectedCoords = getPointerWorldCoords(e);
+			dragOffset = {
+				x: clickedNode.x - selectedCoords.x,
+				y: clickedNode.y - selectedCoords.y,
+			};
 			setGraphStatus('DRAGGING');
-			e.preventDefault();
+			if (e.cancelable) e.preventDefault();
+		} else {
+			// 点击空白背景开启画布平移拖拽
+			isPanning = true;
+			panStartPointer = { x: coords.clientX, y: coords.clientY };
+			panStartOffset = { x: panX, y: panY };
+			canvas.style.cursor = 'grabbing';
+			setGraphStatus('DRAGGING');
 		}
 	}
 
 	function releaseDrag() {
-		const wasDragging = Boolean(draggedNode);
-		const shouldReheat = draggedNodeMoved;
+		const wasDraggingNode = Boolean(draggedNode);
+		const wasPanning = isPanning;
+		isPanning = false;
+		panStartPointer = null;
+		panStartOffset = null;
 		draggedNode = null;
 		draggedNodeMoved = false;
 		dragStartPointer = null;
@@ -413,10 +480,7 @@ function initMusicGraph(): () => void {
 		dragPointerClient = null;
 		if (import.meta.env.DEV) delete canvas.dataset.draggedNode;
 		canvas.style.cursor = hoveredNode ? 'grab' : 'default';
-		if (!wasDragging) return;
-		if (shouldReheat) {
-			startAnimation(true);
-		} else {
+		if (wasDraggingNode || wasPanning) {
 			startAnimation();
 		}
 	}
@@ -427,9 +491,40 @@ function initMusicGraph(): () => void {
 
 	function handleMouseLeave() {
 		hoveredNode = null;
-		const wasDragging = Boolean(draggedNode);
+		const wasActive = Boolean(draggedNode || isPanning);
 		releaseDrag();
-		if (!wasDragging) requestRender();
+		if (!wasActive) requestRender();
+	}
+
+	function handleWheel(e: WheelEvent) {
+		if (e.cancelable) e.preventDefault();
+		const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
+		const nextZoom = Math.max(0.6, Math.min(2.0, zoom * zoomFactor));
+		const rect = canvas.getBoundingClientRect();
+		const mouseX = e.clientX - rect.left;
+		const mouseY = e.clientY - rect.top;
+		panX = mouseX - (mouseX - panX) * (nextZoom / zoom);
+		panY = mouseY - (mouseY - panY) * (nextZoom / zoom);
+		targetPanX = panX;
+		targetPanY = panY;
+		zoom = nextZoom;
+		targetZoom = zoom;
+		startAnimation();
+	}
+
+	// 绑定复位视角按钮
+	const resetBtn = document.getElementById('hud-reset-view');
+	if (resetBtn) {
+		resetBtn.addEventListener(
+			'click',
+			() => {
+				targetPanX = 0;
+				targetPanY = 0;
+				targetZoom = 1;
+				startAnimation();
+			},
+			{ signal }
+		);
 	}
 
 	// 绑定事件
@@ -437,6 +532,7 @@ function initMusicGraph(): () => void {
 	canvas.addEventListener('mousemove', handleMouseMove, { signal });
 	canvas.addEventListener('mouseup', handleMouseUp, { signal });
 	canvas.addEventListener('mouseleave', handleMouseLeave, { signal });
+	canvas.addEventListener('wheel', handleWheel, { passive: false, signal });
 
 	canvas.addEventListener('touchstart', handleMouseDown, {
 		passive: false,
@@ -474,7 +570,10 @@ function initMusicGraph(): () => void {
 		return (
 			simulationAlpha > 0.02 ||
 			links.some((link) => link.plucked) ||
-			nodes.some((node) => Math.hypot(node.vx, node.vy) >= 0.15)
+			nodes.some((node) => Math.hypot(node.vx, node.vy) >= 0.15) ||
+			Math.abs(targetPanX - panX) > 0.4 ||
+			Math.abs(targetPanY - panY) > 0.4 ||
+			Math.abs(targetZoom - zoom) > 0.005
 		);
 	}
 
@@ -491,6 +590,9 @@ function initMusicGraph(): () => void {
 				animationRunning = false;
 				cancelAnimationFrame(animationFrame);
 			}
+			panX = targetPanX;
+			panY = targetPanY;
+			zoom = targetZoom;
 			setGraphStatus(draggedNode ? 'DRAGGING' : 'REDUCED');
 			requestRender();
 			return;
@@ -517,12 +619,29 @@ function initMusicGraph(): () => void {
 
 	function animationLoop() {
 		if (!animationRunning) return;
+
+		// 视角平滑过渡 (Lerp) 动画
+		if (
+			Math.abs(targetPanX - panX) > 0.1 ||
+			Math.abs(targetPanY - panY) > 0.1 ||
+			Math.abs(targetZoom - zoom) > 0.001
+		) {
+			panX += (targetPanX - panX) * 0.15;
+			panY += (targetPanY - panY) * 0.15;
+			zoom += (targetZoom - zoom) * 0.15;
+		}
+
 		updatePhysics();
 		advanceLinkAnimations(links);
 		simulationAlpha = Math.max(0, simulationAlpha * 0.96);
 		drawGraph();
 
-		if (graphIsSettled(nodes, links, null, simulationAlpha)) {
+		if (
+			graphIsSettled(nodes, links, null, simulationAlpha) &&
+			Math.abs(targetPanX - panX) <= 0.5 &&
+			Math.abs(targetPanY - panY) <= 0.5 &&
+			Math.abs(targetZoom - zoom) <= 0.005
+		) {
 			settledFrames += 1;
 		} else {
 			settledFrames = 0;

@@ -226,55 +226,72 @@ const fullWidthIndex = isOdd
 					font-size: 0.8rem;
 					letter-spacing: 1px;
 				}
+				.quadrant-card:active {
+					transform: scale(0.97);
+				}
 			}
 
 			@media (max-width: 480px) {
 				.toy-box-canvas {
-					padding: 1.5rem 1rem;
+					padding: 1.25rem 0.85rem;
 					border-radius: 20px;
-					gap: 1.5rem;
+					gap: 1.25rem;
 				}
 
 				.canvas-header {
-					padding-bottom: 1rem;
+					padding-bottom: 0.8rem;
 				}
 
 				.canvas-title {
-					font-size: 1.6rem;
+					font-size: 1.5rem;
+				}
+
+				.canvas-subtitle {
+					font-size: 0.85rem;
 				}
 
 				.quadrant-grid {
-					gap: 1rem;
+					gap: 0.75rem;
 				}
 
 				.quadrant-card {
-					padding: 1.5rem 0.8rem;
+					padding: 1.25rem 0.75rem;
 					border-radius: 16px;
 				}
 
 				.quadrant-card.full-width {
-					gap: 1rem;
-					padding: 1.2rem 1.5rem;
+					gap: 0.8rem;
+					padding: 1rem 1.2rem;
 				}
 
 				.icon-circle {
-					width: 40px;
-					height: 40px;
+					width: 42px;
+					height: 42px;
 					margin-bottom: 0.6rem;
 				}
 
 				.icon-circle :global(svg) {
-					width: 18px;
-					height: 18px;
+					width: 20px;
+					height: 20px;
 				}
 
 				.big-title {
-					font-size: 1.2rem;
+					font-size: 1.25rem;
 				}
 
 				.small-title {
 					font-size: 0.75rem;
 					letter-spacing: 0.5px;
+				}
+			}
+
+			@media (max-width: 360px) {
+				.quadrant-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.quadrant-card.full-width {
+					grid-column: span 1;
 				}
 			}
 		</style>

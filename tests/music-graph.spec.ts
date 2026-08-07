@@ -3,6 +3,10 @@ import { expect, test } from '@playwright/test';
 test('remounts the graph after Astro client navigation', async ({ page }) => {
 	await page.goto('/musical/');
 	await expect(page.locator('#physics-canvas')).toBeVisible();
+	await expect(page.locator('#physics-canvas')).toHaveAttribute(
+		'data-graph-status',
+		/.+/
+	);
 
 	await page.locator('.graph-a11y-list [data-node-id="sunset-guitar"]').focus();
 	await page.keyboard.press('Enter');
@@ -16,6 +20,10 @@ test('remounts the graph after Astro client navigation', async ({ page }) => {
 	await page.getByRole('link', { name: /音律探索图谱/ }).click();
 
 	await expect(page.locator('#physics-canvas')).toBeVisible();
+	await expect(page.locator('#physics-canvas')).toHaveAttribute(
+		'data-graph-status',
+		/.+/
+	);
 	await page.locator('.graph-a11y-list [data-node-id="echo-fold"]').focus();
 	await page.keyboard.press('Enter');
 	await expect(page.locator('#node-title')).toHaveText('回声折叠');
@@ -29,7 +37,7 @@ test('stops rendering after the graph simulation stabilizes', async ({
 }) => {
 	await page.goto('/musical/');
 	const canvas = page.locator('#physics-canvas');
-	await expect(page.locator('#hud-status')).toHaveText('STABLE', {
+	await expect(canvas).toHaveAttribute('data-graph-status', 'STABLE', {
 		timeout: 10_000,
 	});
 	const stableRenderCount = await canvas.getAttribute('data-render-count');
@@ -46,6 +54,7 @@ test('redraws settled graph hover states with reduced motion', async ({
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await page.goto('/musical/');
 	const canvas = page.locator('#physics-canvas');
+	await expect(canvas).toHaveCSS('touch-action', 'none');
 	await expect(canvas).toHaveAttribute('data-render-count', /\d+/);
 	const box = await canvas.boundingBox();
 	if (!box) throw new Error('Graph canvas has no bounding box.');
@@ -86,11 +95,41 @@ test('releases dragging when a touch interaction is cancelled', async ({
 	await page.mouse.move(box.x + box.width / 2 + radius, box.y + box.height / 2);
 	await page.mouse.down();
 	await expect(canvas).toHaveAttribute('data-dragged-node', 'sunset-guitar');
-	await expect(page.locator('#hud-status')).toHaveText('DRAGGING');
+	await expect(canvas).toHaveAttribute('data-graph-status', 'DRAGGING');
 	await canvas.dispatchEvent('touchcancel');
 	await expect(canvas).not.toHaveAttribute('data-dragged-node', /.+/);
-	await expect(page.locator('#hud-status')).toHaveText('REDUCED');
+	await expect(canvas).toHaveAttribute('data-graph-status', 'REDUCED');
 	await page.mouse.up();
+});
+
+test('resets the view immediately when reduced motion is enabled', async ({
+	page,
+}) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.goto('/musical/');
+	const canvas = page.locator('#physics-canvas');
+	await page.locator('.graph-a11y-list [data-node-id="sunset-guitar"]').focus();
+	await page.keyboard.press('Enter');
+	const getViewOffset = () =>
+		canvas.evaluate((element) => {
+			const activeNodeX = Number(element.dataset.activeNodeX);
+			const activeNodeY = Number(element.dataset.activeNodeY);
+			const activeNodeScreenX = Number(element.dataset.activeNodeScreenX);
+			const activeNodeScreenY = Number(element.dataset.activeNodeScreenY);
+			return (
+				Math.abs(activeNodeScreenX - activeNodeX) +
+				Math.abs(activeNodeScreenY - activeNodeY)
+			);
+		});
+	const box = await canvas.boundingBox();
+	if (!box) throw new Error('Graph canvas has no bounding box.');
+	await page.mouse.move(box.x + 20, box.y + 20);
+	await page.mouse.wheel(0, -100);
+	await expect.poll(getViewOffset).toBeGreaterThan(1);
+
+	await page.getByRole('button', { name: '复位视角' }).click();
+	await expect.poll(getViewOffset).toBeLessThan(0.01);
+	await expect(canvas).toHaveAttribute('data-graph-status', 'REDUCED');
 });
 
 test('does not reheat the graph when clicking an active node without moving it', async ({
@@ -98,7 +137,7 @@ test('does not reheat the graph when clicking an active node without moving it',
 }) => {
 	await page.goto('/musical/');
 	const canvas = page.locator('#physics-canvas');
-	await expect(page.locator('#hud-status')).toHaveText('STABLE', {
+	await expect(canvas).toHaveAttribute('data-graph-status', 'STABLE', {
 		timeout: 10_000,
 	});
 	await page.locator('.graph-a11y-list [data-node-id="sunset-guitar"]').focus();
@@ -113,15 +152,17 @@ test('does not reheat the graph when clicking an active node without moving it',
 	expect(
 		Number(await canvas.getAttribute('data-simulation-alpha'))
 	).toBeLessThan(0.1);
-	await expect(page.locator('#hud-status')).toHaveText('STABLE', {
+	await expect(canvas).toHaveAttribute('data-graph-status', 'STABLE', {
 		timeout: 10_000,
 	});
 	const box = await canvas.boundingBox();
 	if (!box) throw new Error('Graph canvas has no bounding box.');
-	const nodeX = Number(await canvas.getAttribute('data-active-node-x'));
-	const nodeY = Number(await canvas.getAttribute('data-active-node-y'));
-	await page.mouse.move(box.x + nodeX, box.y + nodeY);
-	await expect(page.locator('#hud-status')).toHaveText('STABLE', {
+	const selectedNodeX =
+		box.x + Number(await canvas.getAttribute('data-active-node-screen-x'));
+	const selectedNodeY =
+		box.y + Number(await canvas.getAttribute('data-active-node-screen-y'));
+	await page.mouse.move(selectedNodeX, selectedNodeY);
+	await expect(canvas).toHaveAttribute('data-graph-status', 'STABLE', {
 		timeout: 10_000,
 	});
 
@@ -130,7 +171,7 @@ test('does not reheat the graph when clicking an active node without moving it',
 	await expect(canvas).toHaveAttribute('data-dragged-node', 'sunset-guitar');
 	await page.mouse.up();
 	await page.waitForTimeout(250);
-	await expect(page.locator('#hud-status')).toHaveText('STABLE');
+	await expect(canvas).toHaveAttribute('data-graph-status', 'STABLE');
 	await expect
 		.poll(async () => Number(await canvas.getAttribute('data-render-count')))
 		.toBeLessThanOrEqual(renderCount + 2);
@@ -143,42 +184,41 @@ test('renders settled hover changes without restarting the simulation', async ({
 	const canvas = page.locator('#physics-canvas');
 	await page.locator('.graph-a11y-list [data-node-id="sunset-guitar"]').focus();
 	await page.keyboard.press('Enter');
-	await expect(page.locator('#hud-status')).toHaveText('STABLE', {
+	await expect(canvas).toHaveAttribute('data-graph-status', 'STABLE', {
 		timeout: 10_000,
 	});
 	const box = await canvas.boundingBox();
 	if (!box) throw new Error('Graph canvas has no bounding box.');
-	const nodeX = Number(await canvas.getAttribute('data-active-node-x'));
-	const nodeY = Number(await canvas.getAttribute('data-active-node-y'));
+	const selectedNodeX =
+		box.x + Number(await canvas.getAttribute('data-active-node-screen-x'));
+	const selectedNodeY =
+		box.y + Number(await canvas.getAttribute('data-active-node-screen-y'));
+	await page.mouse.move(box.x + 2, box.y + 2);
+	await page.waitForTimeout(50);
 	let renderCount = Number(await canvas.getAttribute('data-render-count'));
-	await canvas.dispatchEvent('mousemove', {
-		clientX: box.x + nodeX,
-		clientY: box.y + nodeY,
-	});
+	await page.mouse.move(selectedNodeX, selectedNodeY);
 	await expect
 		.poll(async () => Number(await canvas.getAttribute('data-render-count')))
-		.toBe(renderCount + 1);
+		.toBeGreaterThan(renderCount);
+	renderCount = Number(await canvas.getAttribute('data-render-count'));
 	await page.waitForTimeout(250);
 	await expect(canvas).toHaveAttribute(
 		'data-render-count',
-		String(renderCount + 1)
+		String(renderCount)
 	);
-	await expect(page.locator('#hud-status')).toHaveText('STABLE');
+	await expect(canvas).toHaveAttribute('data-graph-status', 'STABLE');
 
-	renderCount += 1;
-	await canvas.dispatchEvent('mousemove', {
-		clientX: box.x + 2,
-		clientY: box.y + 2,
-	});
+	await page.mouse.move(box.x + 2, box.y + 2);
 	await expect
 		.poll(async () => Number(await canvas.getAttribute('data-render-count')))
-		.toBe(renderCount + 1);
+		.toBeGreaterThan(renderCount);
+	renderCount = Number(await canvas.getAttribute('data-render-count'));
 	await page.waitForTimeout(250);
 	await expect(canvas).toHaveAttribute(
 		'data-render-count',
-		String(renderCount + 1)
+		String(renderCount)
 	);
-	await expect(page.locator('#hud-status')).toHaveText('STABLE');
+	await expect(canvas).toHaveAttribute('data-graph-status', 'STABLE');
 });
 
 test('releases dragging when the window loses focus', async ({ page }) => {
@@ -197,7 +237,7 @@ test('releases dragging when the window loses focus', async ({ page }) => {
 
 	await page.evaluate(() => window.dispatchEvent(new Event('blur')));
 	await expect(canvas).not.toHaveAttribute('data-dragged-node', /.+/);
-	await expect(page.locator('#hud-status')).toHaveText('REDUCED');
+	await expect(canvas).toHaveAttribute('data-graph-status', 'REDUCED');
 	await page.mouse.up();
 });
 
@@ -225,7 +265,7 @@ test('pauses, releases dragging, and restores status across visibility changes',
 		document.dispatchEvent(new Event('visibilitychange'));
 	});
 	await expect(canvas).not.toHaveAttribute('data-dragged-node', /.+/);
-	await expect(page.locator('#hud-status')).toHaveText('PAUSED');
+	await expect(canvas).toHaveAttribute('data-graph-status', 'PAUSED');
 
 	await page.evaluate(() => {
 		Object.defineProperty(document, 'hidden', {
@@ -234,7 +274,7 @@ test('pauses, releases dragging, and restores status across visibility changes',
 		});
 		document.dispatchEvent(new Event('visibilitychange'));
 	});
-	await expect(page.locator('#hud-status')).toHaveText('REDUCED');
+	await expect(canvas).toHaveAttribute('data-graph-status', 'REDUCED');
 	await page.mouse.up();
 });
 
@@ -284,7 +324,7 @@ test('waits for valid canvas dimensions before starting the simulation', async (
 	});
 	await page.goto('/musical/');
 	const canvas = page.locator('#physics-canvas');
-	await expect(page.locator('#hud-status')).toHaveText('READY');
+	await expect(canvas).toHaveAttribute('data-graph-status', 'READY');
 	await expect(canvas).not.toHaveAttribute('data-render-count', /.+/);
 
 	await page.evaluate(() => {
@@ -292,7 +332,7 @@ test('waits for valid canvas dimensions before starting the simulation', async (
 		canvasCard?.style.removeProperty('display');
 	});
 	await expect(canvas).toHaveAttribute('data-render-count', /\d+/);
-	await expect(page.locator('#hud-status')).toHaveText('STABLE', {
+	await expect(canvas).toHaveAttribute('data-graph-status', 'STABLE', {
 		timeout: 10_000,
 	});
 });
@@ -328,19 +368,27 @@ test('clamps nodes and preserves dragging when the canvas is resized', async ({
 		.poll(async () => (await canvas.boundingBox())?.width)
 		.toBeLessThan(400);
 	await expect(canvas).toHaveAttribute('data-dragged-node', 'sunset-guitar');
-	await expect
-		.poll(async () => Number(await canvas.getAttribute('data-active-node-x')))
-		.toBe(69);
-	await expect(page.locator('#hud-status')).toHaveText('DRAGGING');
 	const resizedBox = await canvas.boundingBox();
 	if (!resizedBox) throw new Error('Resized graph canvas has no bounding box.');
+	const resizedBoundary =
+		Math.max(
+			32,
+			Math.min(
+				54,
+				Math.floor(Math.min(resizedBox.width, resizedBox.height) / 8.5)
+			)
+		) + 15;
+	await expect
+		.poll(async () => Number(await canvas.getAttribute('data-active-node-x')))
+		.toBe(resizedBoundary);
+	await expect(canvas).toHaveAttribute('data-graph-status', 'DRAGGING');
 	await page.mouse.move(resizedBox.x + 11, nodeCenterY);
 	await expect
 		.poll(async () => Number(await canvas.getAttribute('data-active-node-x')))
-		.toBe(79);
+		.toBe(resizedBoundary + 10);
 	await page.mouse.up();
 	await expect(canvas).not.toHaveAttribute('data-dragged-node', /.+/);
-	await expect(page.locator('#hud-status')).toHaveText('REDUCED');
+	await expect(canvas).toHaveAttribute('data-graph-status', 'REDUCED');
 });
 
 test('reheats after cumulative resize changes cross the threshold', async ({
@@ -348,7 +396,7 @@ test('reheats after cumulative resize changes cross the threshold', async ({
 }) => {
 	await page.goto('/musical/');
 	const canvas = page.locator('#physics-canvas');
-	await expect(page.locator('#hud-status')).toHaveText('STABLE', {
+	await expect(canvas).toHaveAttribute('data-graph-status', 'STABLE', {
 		timeout: 10_000,
 	});
 	const initialBox = await canvas.boundingBox();
@@ -390,7 +438,7 @@ test('reheats after cumulative resize changes cross the threshold', async ({
 			Number(await canvas.getAttribute('data-resize-reheat-count'))
 		)
 		.toBe(initialReheatCount + 1);
-	await expect(page.locator('#hud-status')).toHaveText('RUNNING');
+	await expect(canvas).toHaveAttribute('data-graph-status', 'RUNNING');
 	await expect
 		.poll(async () => Number(await canvas.getAttribute('data-render-count')))
 		.toBeGreaterThan(renderCount);

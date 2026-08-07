@@ -14,12 +14,28 @@ export function createGraphNodes(nodes: MusicNode[]): GraphNode[] {
 	}));
 }
 
+export function updateNodeRadii(
+	nodes: GraphNode[],
+	width: number,
+	height: number
+) {
+	if (width <= 0 || height <= 0 || nodes.length === 0) return;
+	const dynamicRadius = Math.max(
+		32,
+		Math.min(54, Math.floor(Math.min(width, height) / 8.5))
+	);
+	nodes.forEach((node) => {
+		node.radius = dynamicRadius;
+	});
+}
+
 export function resetNodeLayout(
 	nodes: GraphNode[],
 	width: number,
 	height: number
 ) {
 	if (width <= 0 || height <= 0 || nodes.length === 0) return;
+	updateNodeRadii(nodes, width, height);
 	const radius = Math.min(160, Math.max(90, Math.min(width, height) / 3));
 	nodes.forEach((node, index) => {
 		const angle = (index / nodes.length) * Math.PI * 2;
@@ -42,6 +58,7 @@ export function resizeNodeLayout(
 		resetNodeLayout(nodes, newWidth, newHeight);
 		return;
 	}
+	updateNodeRadii(nodes, newWidth, newHeight);
 	const scaleX = newWidth / oldWidth;
 	const scaleY = newHeight / oldHeight;
 	nodes.forEach((node) => {

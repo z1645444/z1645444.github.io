@@ -70,6 +70,12 @@
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
+	-webkit-tap-highlight-color: transparent;
+}
+
+html {
+	overflow-x: hidden;
+	width: 100%;
 }
 
 body {
@@ -79,6 +85,14 @@ body {
 	line-height: 1.6;
 	font-size: 18px;
 	min-height: 100vh;
+	overflow-x: hidden;
+	width: 100%;
+}
+
+@media (max-width: 768px) {
+	body {
+		font-size: 16px;
+	}
 }
 
 /* Toy Grid Pattern Background */
@@ -118,6 +132,12 @@ main {
 	padding: 2rem;
 }
 
+@media (max-width: 768px) {
+	main {
+		padding: 1.25rem 1rem;
+	}
+}
+
 h1,
 h2,
 h3,
@@ -141,6 +161,21 @@ h3 {
 }
 h4 {
 	font-size: 1.3rem;
+}
+
+@media (max-width: 768px) {
+	h1 {
+		font-size: 2rem;
+	}
+	h2 {
+		font-size: 1.65rem;
+	}
+	h3 {
+		font-size: 1.35rem;
+	}
+	h4 {
+		font-size: 1.15rem;
+	}
 }
 
 a {
