@@ -10,9 +10,9 @@
 
 	--text-main: #282828; /* Gruvbox dark0 */
 	--text-muted: #7c6f64; /* Gruvbox dark4 */
-	--border-color: #282828;
+	--border-color: rgba(40, 40, 40, 0.15);
 	--shadow-flat: #282828;
-	--shadow-color: rgba(40, 40, 40, 0.4);
+	--shadow-color: rgba(40, 40, 40, 0.2);
 	--dot-color: rgba(124, 111, 100, 0.12);
 
 	/* Fonts */
@@ -36,9 +36,9 @@
 
 	--text-main: #ebdbb2; /* Gruvbox light1 (warm cream) */
 	--text-muted: #a89984; /* Gruvbox light4 (warm gray) */
-	--border-color: #7c6f64; /* Gruvbox dark4 (muted gray-brown) */
+	--border-color: rgba(235, 219, 178, 0.15); /* Soft light border */
 	--shadow-flat: #1d2021; /* Retro hard shadow (matches base) */
-	--shadow-color: rgba(29, 32, 33, 0.5);
+	--shadow-color: rgba(29, 32, 33, 0.3);
 	--dot-color: rgba(124, 111, 100, 0.08);
 
 	--accent: #8ec07c; /* Gruvbox aqua */
@@ -56,9 +56,9 @@
 
 		--text-main: #ebdbb2;
 		--text-muted: #a89984;
-		--border-color: #7c6f64;
+		--border-color: rgba(235, 219, 178, 0.15);
 		--shadow-flat: #1d2021;
-		--shadow-color: rgba(29, 32, 33, 0.5);
+		--shadow-color: rgba(29, 32, 33, 0.3);
 		--dot-color: rgba(124, 111, 100, 0.08);
 
 		--accent: #8ec07c;
@@ -91,7 +91,7 @@ body {
 /* Chunky Tactile Cards */
 .toy-card {
 	background-color: var(--bg-card);
-	border: 2px solid var(--border-color);
+	border: 1px solid var(--border-color);
 	border-radius: 24px;
 	box-shadow: 4px 4px 0px var(--shadow-flat);
 	padding: 1.5rem;
@@ -155,7 +155,7 @@ img {
 	max-width: 100%;
 	height: auto;
 	border-radius: 16px;
-	border: 2px solid var(--border-color);
+	border: 1px solid var(--border-color);
 }
 
 code {
@@ -163,7 +163,7 @@ code {
 	font-size: 0.9em;
 	padding: 0.2em 0.4em;
 	background-color: var(--bg-page);
-	border: 2px solid var(--border-color);
+	border: 1px solid var(--border-color);
 	border-radius: 6px;
 }
 
@@ -171,7 +171,7 @@ pre {
 	font-family: var(--font-mono);
 	padding: 1.5rem;
 	background-color: var(--bg-page);
-	border: 2px solid var(--border-color);
+	border: 1px solid var(--border-color);
 	border-radius: 16px;
 	box-shadow: 3px 3px 0px var(--shadow-flat);
 	overflow-x: auto;
@@ -194,7 +194,7 @@ blockquote {
 
 hr {
 	border: none;
-	border-top: 2px dashed var(--border-color);
+	border-top: 1px solid var(--border-color);
 	margin: 2rem 0;
 }
 
@@ -224,12 +224,12 @@ hr {
 
 ::-webkit-scrollbar-track {
 	background: var(--bg-sidebar);
-	border-left: 2px solid var(--border-color);
+	border-left: 1px solid var(--border-color);
 }
 
 ::-webkit-scrollbar-thumb {
 	background-color: var(--text-muted);
-	border: 2px solid var(--border-color);
+	border: 1px solid var(--border-color);
 	border-radius: 8px;
 }
 
