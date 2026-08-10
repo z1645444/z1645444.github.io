@@ -222,7 +222,10 @@ export function drawMusicGraph({
 
 		// 2.6 绘制外挂的小小类型标识 (比如 [Jam] 或 [Synth])
 		ctx.fillStyle = isDark ? '#ebdbb2' : '#282828';
-		const tagFontSize = Math.max(8, Math.min(9, Math.floor(titleFontSize * 0.75)));
+		const tagFontSize = Math.max(
+			8,
+			Math.min(9, Math.floor(titleFontSize * 0.75))
+		);
 		ctx.font = `bold ${tagFontSize}px monospace`;
 		const typeLabel = node.type.split(' ')[0];
 		const tw = ctx.measureText(typeLabel).width;

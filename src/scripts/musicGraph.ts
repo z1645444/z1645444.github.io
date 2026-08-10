@@ -293,10 +293,7 @@ function initMusicGraph(): () => void {
 		targetPanX = viewportWidth / 2 - node.x * zoom;
 		targetPanY = Math.max(
 			-viewportHeight * 0.35,
-			Math.min(
-				viewportHeight * 0.35,
-				viewportHeight * 0.42 - node.y * zoom
-			)
+			Math.min(viewportHeight * 0.35, viewportHeight * 0.42 - node.y * zoom)
 		);
 
 		pluckConnectedLinks(links, node, reducedMotionQuery.matches);
@@ -345,7 +342,8 @@ function initMusicGraph(): () => void {
 	// 转换屏幕坐标为世界坐标 (受 pan 与 zoom 影响)
 	function getPointerWorldCoords(e: MouseEvent | TouchEvent) {
 		const rect = canvas.getBoundingClientRect();
-		const touch = 'touches' in e && e.touches.length > 0 ? e.touches[0] : undefined;
+		const touch =
+			'touches' in e && e.touches.length > 0 ? e.touches[0] : undefined;
 		const mouse = e as MouseEvent;
 		const clientX = touch?.clientX ?? mouse.clientX;
 		const clientY = touch?.clientY ?? mouse.clientY;
@@ -448,7 +446,7 @@ function initMusicGraph(): () => void {
 				x: clickedNode.x - coords.x,
 				y: clickedNode.y - coords.y,
 			};
-		if (import.meta.env.DEV) canvas.dataset.draggedNode = clickedNode.id;
+			if (import.meta.env.DEV) canvas.dataset.draggedNode = clickedNode.id;
 			selectNode(clickedNode);
 			const selectedCoords = getPointerWorldCoords(e);
 			dragOffset = {
